@@ -272,10 +272,10 @@
                   aria-expanded="false"
                 >
                   <img
-                    v-if="user && user.img_profile"
-                    :src="user.img_profile"
+                    v-if="userData && userData.img_profile"
+                    :src="userData.img_profile"
                     class="img-fluid rounded-circle me-3"
-                    alt="user"
+                    alt="userData"
                     loading="lazy"
                     style="max-width: 25px; height: auto"
                   />
@@ -289,7 +289,11 @@
                   />
                   <div class="caption">
                     <h6 class="mb-0 line-height">
-                      {{ user ? user.nom + " " + user.prenom : "Utilisateur" }}
+                      {{
+                        userData
+                          ? userData.nom + " " + userData.prenom
+                          : "Utilisateur"
+                      }}
                     </h6>
                   </div>
                 </a>
@@ -303,7 +307,9 @@
                         <h5 class="mb-0">
                           Hello
                           {{
-                            user ? user.nom + " " + user.prenom : "Utilisateur"
+                            userData
+                              ? userData.nom + " " + userData.prenom
+                              : "Utilisateur"
                           }}
                         </h5>
                       </div>
@@ -375,11 +381,11 @@ import axios from "axios";
 export default {
   data() {
     return {
-      user: null,
+      userData: JSON.parse(localStorage.getItem("userData") || "null"),
     };
   },
   mounted() {
-    this.loadUserDetails();
+    this.userData = JSON.parse(localStorage.getItem("userData") || "null");
   },
   name: "DefaultHeader",
   props: {
@@ -411,29 +417,28 @@ export default {
     };
   },
   methods: {
-    loadUserDetails() {
-      axios
-        .get("http://127.0.0.1:8000/api/user", {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        })
-        .then((response) => {
-          this.user = response.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
+    // loadUserDetails() {
+    //   axios
+    //     .get("http://127.0.0.1:8000/api/user", {
+    //       headers: {
+    //         Authorization: "Bearer " + localStorage.getItem("token"),
+    //       },
+    //     })
+    //     .then((response) => {
+    //       this.user = response.data;
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    // },
     logout() {
       axios
         .post("http://127.0.0.1:8000/api/logout") // Appel à l'API Laravel pour la déconnexion
         .then((response) => {
-          localStorage.removeItem("token"); // Suppression du token du local storage
+          localStorage.removeItem("token");
+          localStorage.removeItem("userData");
           // Redirection vers la page de connexion ou autre page appropriée
-          this.$router.push({ name: "auth1.sign-in1" }); // Redirection vers la page de connexion
-          // Redirection vers la page d'inscription après la déconnexion
-          this.$router.push({ name: "auth1.register" }); // Remplacez 'auth1.register' par l'URL appropriée
+          this.$router.push({ name: "auth1.sign-in1" });
         })
         .catch((error) => {
           console.error("Erreur lors de la déconnexion :", error);

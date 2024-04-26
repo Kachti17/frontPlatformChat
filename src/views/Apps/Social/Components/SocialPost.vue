@@ -114,7 +114,7 @@
     </iq-card>
   </div>
 
-  <div class="col-sm-12">
+  <div class="col-lg-12">
     <div class="d-flex justify-content-between mb-3">
       <button @click="showApproved = true">Publications Approuvées</button>
       <button @click="showApproved = false">Publications Non Approuvées</button>
@@ -374,8 +374,9 @@
                 class="like-block position-relative d-flex align-items-center"
               >
                 <div class="d-flex align-items-center">
+                  {{ aReagi }}
                   <div class="like-data">
-                    <div class="dropdown" @click.stop="">
+                    <div class="dropdown" @click.stop="" v-if="aReagi">
                       <span
                         class="dropdown-toggle"
                         data-bs-toggle="dropdown"
@@ -385,7 +386,32 @@
                       >
                         <img
                           ref="reactionImage"
-                          src="@/assets/images/icon/01.png"
+                          :src="
+                            aReagi
+                              ? require('@/assets/images/icon/02.png')
+                              : require('@/assets/images/icon/01.png')
+                          "
+                          class="img-fluid"
+                          alt=""
+                          @click="handleReaction(post.id)"
+                        />
+                      </span>
+                    </div>
+                    <div class="dropdown" @click.stop="" v-else>
+                      <span
+                        class="dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        role="button"
+                      >
+                        <img
+                          ref="reactionImage"
+                          :src="
+                            aReagi
+                              ? require('@/assets/images/icon/02.png')
+                              : require('@/assets/images/icon/01.png')
+                          "
                           class="img-fluid"
                           alt=""
                           @click="handleReaction(post.id)"
@@ -393,6 +419,7 @@
                       </span>
                     </div>
                   </div>
+
                   <div class="total-like-block ms-2 me-3">
                     <div class="dropdown">
                       <span
@@ -462,7 +489,7 @@
             </div>
             <hr />
             <div class="total-comment-block">
-              <h3 class="mb-3">commentaires</h3>
+              <!-- <h3 class="mb-3">commentaires</h3> -->
               <div
                 v-for="commentaire in post.commentaires"
                 :key="commentaire.id"
@@ -481,22 +508,6 @@
                       />
                     </div>
                     <div class="comment-data-block ms-3">
-                      <h6>
-                        {{ commentaire.user.nom }}
-                        {{ commentaire.user.prenom }}
-                      </h6>
-
-                      <p class="mb-0">
-                        {{ commentaire.contenu_comm }}
-                      </p>
-                      <div
-                        class="d-flex flex-wrap align-items-center comment-activity"
-                      >
-                        <span>{{
-                          formatDateTime(commentaire.created_at)
-                        }}</span>
-                      </div>
-
                       <div
                         v-if="commentaire.user_id === userData.id"
                         class="d-flex flex-wrap mt-3"
@@ -513,6 +524,21 @@
                         >
                           Delete
                         </button>
+                      </div>
+                      <h6>
+                        {{ commentaire.user.nom }}
+                        {{ commentaire.user.prenom }}
+                      </h6>
+
+                      <p class="mb-0">
+                        {{ commentaire.contenu_comm }}
+                      </p>
+                      <div
+                        class="d-flex flex-wrap align-items-center comment-activity"
+                      >
+                        <span>{{
+                          formatDateTime(commentaire.created_at)
+                        }}</span>
                       </div>
                     </div>
 
@@ -566,7 +592,7 @@
                 v-model="nouveauCommentaire"
               />
               <button type="submit" class="btn btn-primary mr-2">
-                Ajouter Commentaire
+                Add comment
               </button>
             </form>
           </div>
@@ -608,7 +634,7 @@ export default {
         lien: "",
       },
       nouveauCommentaire: "",
-
+      aReagi: false,
       editedComment: "",
       commentToEdit: null,
       isEditModalOpen: false,
@@ -631,7 +657,7 @@ export default {
     this.userData = JSON.parse(localStorage.getItem("userData") || "null");
     console.log(this.userData);
 
-    this.loadUserDetails();
+    //this.loadUserDetails();
     this.loadUnapprovedPublications();
     this.loadApprovedPublications();
     this.loadWaitingForModificationPublications();
@@ -703,7 +729,7 @@ export default {
         const response = await axios.get(
           `http://127.0.0.1:8000/api/publication/${pubId}/userReacted`
         );
-        const usersWhoReacted = response.data;
+        const test = response.data;
 
         return response.data;
       } catch (error) {
@@ -720,7 +746,7 @@ export default {
           console.log(response.data);
 
           // bch nrecuperi beha el user logged in
-          await this.loadUserDetails();
+          //await this.loadUserDetails();
           // if (this.user !== null) {
           //   const userLoggedInID = this.user.id;
 
@@ -745,10 +771,40 @@ export default {
         });
     },
 
-    async handleReaction(pubId) {
+    // hasReaction(pubId) {
+    //   return this.reactions.some(
+    //     (reaction) =>
+    //       reaction.pub_id === pubId && reaction.user_id === this.loggedInUserId
+    //   );
+    // },
+
+    async checkUserReaction(pubId) {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.post(
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/publication/${pubId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        this.aReagi = response.data;
+        console.log("rrrrr", response.data);
+
+        console.log("rrrrr", this.aReagi);
+        return this.aReagi;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    },
+
+    async handleReaction(pubId) {
+      console.log(pubId);
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
           `http://127.0.0.1:8000/api/publication/${pubId}/react`,
           null,
           {
@@ -757,12 +813,10 @@ export default {
             },
           }
         );
-        console.log(response.data);
-        this.loadApprovedPublications();
 
-        if (this.$refs.reactionImage && this.$refs.reactionImage.classList) {
-          this.$refs.reactionImage.classList.add("reacted");
-        }
+        this.loadApprovedPublications();
+        // const aReagi = await this.checkUserReaction(pubId);
+        // console.log("reaaacttttt", "L'utilisateur a réagi au post ?", aReagi);
       } catch (error) {
         console.error(error);
       }
@@ -770,7 +824,7 @@ export default {
     async unreact(pubId) {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.post(
+        await axios.post(
           `http://127.0.0.1:8000/api/publication/${pubId}/unreact`,
           null,
           {
@@ -779,22 +833,9 @@ export default {
             },
           }
         );
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async fetchComment(id) {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/comment/${id}`
-        );
-        this.editedComment = response.data.contenu_comm;
-        this.commentId = id;
-        this.commentToEditId = id;
-
-        this.$refs.commentToEdit.focus();
-        this.showUpdateButton = true;
+        this.loadApprovedPublications();
+        // const aReagi = await this.checkUserReaction(pubId);
+        // console.log("L'utilisateur a dés-réagi au post ?", !aReagi);
       } catch (error) {
         console.error(error);
       }
@@ -918,6 +959,7 @@ export default {
           alert("La publication a été acceptée avec succès");
           this.loadUnapprovedPublications();
           this.loadWaitingForModificationPublications();
+          this.loadApprovedPublications();
         })
         .catch((error) => {
           console.error(error);
@@ -947,6 +989,8 @@ export default {
     },
 
     loadUserDetails() {
+      const token = localStorage.getItem("token");
+
       axios
         .get("http://127.0.0.1:8000/api/user", {
           headers: {

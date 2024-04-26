@@ -110,14 +110,13 @@ export default {
     return {
       email: "",
       password: "",
-      loggedIn: false,
       user: {},
       error: "",
     };
   },
   methods: {
     login() {
-      axios
+      return axios
         .post("http://127.0.0.1:8000/api/login", {
           email: this.email,
           password: this.password,
@@ -127,8 +126,7 @@ export default {
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("userData", JSON.stringify(response.data.user));
 
-          this.loggedIn = true;
-          this.loadUserDetails();
+          return this.loadUserDetails();
         })
         .catch((error) => {
           this.error = error.response.data.message;
@@ -157,16 +155,15 @@ export default {
       }
     },
 
-    onSubmit() {
-      this.login();
-      
+    async onSubmit() {
+      await this.login();
+
       this.$router.push({ name: "social.list" });
     },
   },
   created() {
     const token = localStorage.getItem("token");
     if (token) {
-      this.loggedIn = true;
       this.loadUserDetails();
     }
   },

@@ -49,30 +49,32 @@
               <template v-slot:body>
                 <form @submit.prevent="saveChanges()">
                   <div class="form-group row align-items-center">
-                    <div class="col-md-12">
-                      <div class="profile-img-edit">
-                        <img
-                          :src="
-                            userData.img_profile
-                              ? userData.img_profile
-                              : defaultImageUrl2
-                          "
-                          alt="image de profil"
-                          class="avatar-130 img-fluid"
-                        />
-                        <div class="p-image">
-                          <i
-                            class="ri-pencil-line upload-button text-white"
-                          ></i>
-                          <input
-                            class="file-upload"
-                            type="file"
-                            accept="image/*"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+    <div class="col-md-12">
+      <div class="profile-img-edit">
+        <img
+          :src="
+            userData.img_profile
+              ? userData.img_profile
+              : defaultImageUrl2
+          "
+          alt="image de profil"
+          class="avatar-130 img-fluid"
+        />
+        <div class="p-image">
+          <i
+            class="ri-pencil-line upload-button text-white"
+          ></i>
+          <input
+            class="file-upload"
+            type="file"
+            accept="image/*"
+            @change="handleFileUpload"
+          />
+          <button @click="uploadProfileImage">Télécharger l'image de profil</button>
+        </div>
+      </div>
+    </div>
+  </div>
                   <div class="row align-items-center">
                     <div class="form-group col-sm-6" v-if="user">
                       <label for="fname" class="form-label">First Name *</label>
@@ -294,6 +296,29 @@ export default {
         console.error("Erreur lors du changement de mot de passe :", error);
         alert("Une erreur s'est produite lors du changement de mot de passe.");
       }
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      this.selectedFile = file;
+    },
+    uploadProfileImage() {
+      const formData = new FormData();
+      formData.append("img_profile", this.selectedFile);
+      axios
+        .post("http://127.0.0.1:8000/api/imgProfile", formData), {headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },}
+        .then((response) => {
+          console.log(response.data);
+          alert("Image de profil mise à jour avec succès !");
+        })
+        .catch((error) => {
+          // Gérer les erreurs, par exemple, afficher un message d'erreur
+          console.error(error);
+          alert(
+            "Une erreur est survenue lors de la mise à jour de l'image de profil."
+          );
+        });
     },
   },
 };

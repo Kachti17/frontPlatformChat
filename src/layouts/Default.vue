@@ -23,7 +23,7 @@
     </div>
     <!-- Wrapper End-->
     <DefaultFooter/>
-    <DefaultRightSidebar/>
+    <!-- <DefaultRightSidebar/> -->
     <SettingOffcanvas/>
   </div>
 </template>

@@ -10,8 +10,8 @@
             <th>Email</th>
             <th>Phone Number</th>
             <th>Inscription date</th>
-            <th>Action</th> <!-- Nouvelle colonne pour le bouton d'envoi d'email -->
-
+            <th>Action</th>
+            <!-- Nouvelle colonne pour le bouton d'envoi d'email -->
           </tr>
         </thead>
         <tbody>
@@ -22,18 +22,27 @@
             <td>{{ participant.tel }}</td>
             <td>{{ participant.inscription_date }}</td>
             <td>
-              <button @click="sendEmail(participant)" class="btn btn-primary btn-sm">Envoyer Email</button>
+              <button
+                @click="sendEmail(participant)"
+                class="btn btn-primary btn-sm"
+              >
+                Envoyer Email
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
+      <div class="col-md-6 d-flex justify-content-end">
+        <button @click="goBack" class="btn btn-sm btn-secondary">
+          Go back
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
-
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
@@ -46,30 +55,42 @@ export default {
     this.fetchParticipants(eventId);
   },
   methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     async fetchParticipants(eventId) {
-  try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/participants/filtrer-by-event/${eventId}`);
-    // Vous pouvez accéder aux détails du user comme ceci
-    this.participantsList = response.data.map(participant => {
-      return {
-        nom: participant.user.nom,
-        prenom: participant.user.prenom,
-        email: participant.user.email,
-        tel: participant.user.tel,
-        inscription_date: participant.inscription_date,
-      };
-    });
-  } catch (error) {
-    console.error('Erreur lors de la récupération des participants :', error);
-    alert('Une erreur s\'est produite lors de la récupération des participants.');
-  }
-},
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/participants/filtrer-by-event/${eventId}`
+        );
+        // Vous pouvez accéder aux détails du user comme ceci
+        this.participantsList = response.data.map((participant) => {
+          return {
+            nom: participant.user.nom,
+            prenom: participant.user.prenom,
+            email: participant.user.email,
+            tel: participant.user.tel,
+            inscription_date: participant.inscription_date,
+          };
+        });
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération des participants :",
+          error
+        );
+        alert(
+          "Une erreur s'est produite lors de la récupération des participants."
+        );
+      }
+    },
 
-sendEmail(participant) {
+    sendEmail(participant) {
       const subject = "Détails du participant";
       const body = `Nom: ${participant.nom}\nPrénom: ${participant.prenom}\nEmail: ${participant.email}\nTéléphone: ${participant.tel}\nDate d'inscription: ${participant.inscription_date}`;
 
-      const mailToUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const mailToUrl = `mailto:?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
       window.location.href = mailToUrl;
     },
   },

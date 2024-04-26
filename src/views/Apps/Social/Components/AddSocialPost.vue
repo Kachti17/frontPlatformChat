@@ -10,11 +10,10 @@
       <template v-slot:body>
         <div class="d-flex align-items-center">
           <div class="user-img">
+
             <img
-              :src="
-                userData.img_profile ? userData.img_profile : defaultImageUrl2
-              "
-              alt="image de profil"
+              :src="defaultImageUrl2"
+              alt="image de profil par défaut"
               class="avatar-40 img-fluid"
             />
           </div>
@@ -95,12 +94,10 @@
           <div class="d-flex align-items-center">
             <div class="user-img">
               <img
-              :src="
-                userData.img_profile ? userData.img_profile : defaultImageUrl2
-              "
-              alt="image de profil"
-              class="avatar-40 img-fluid"
-            />
+                              class="avatar-40 rounded"
+                              src="@/assets/images/user/user3.png"
+                              alt=""
+                            />
             </div>
             <form class="post-text ms-3 w-100" action="javascript:void();">
               <input

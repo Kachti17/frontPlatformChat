@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import '../../src/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css'
 import'../../src/assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css'
 import '../../src/assets/vendor/remixicon/fonts/remixicon.css'
+import { isUserLoggedIn } from './utils'
 
 const childRoutes = (prop, mode) => [
   {
@@ -178,11 +179,7 @@ const blankchildRoutes = (prop, mode) => [
     name: prop + '.sign-up1',
     component: () => import('../views/AuthPages/Default/SignUp1')
   },
-  {
-    path: 'firstLogin',
-    name: prop + '.firstLogin',
-    component: () => import('../views/AuthPages/Default/FirstLogIn')
-  },
+  
   {
     path: 'recoverpassword',
     name: prop + '.recoverpassword1',
@@ -738,7 +735,56 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   base: process.env.BASE_URL,
-  routes
+  routes: routes
 })
+
+// function isLoggedIn() {
+//   // Implémentez votre logique de vérification de connexion ici
+//   // Retournez true si l'utilisateur est connecté, false sinon
+//   return false; // Par défaut, on suppose que l'utilisateur n'est pas connecté
+// }
+
+// router.beforeEach((to, from, next) => {
+//   // Vérifie si l'utilisateur est connecté avant de naviguer vers la nouvelle route
+//   if (to.meta.auth && !isUserLoggedIn()) {
+//     // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+//     next('/auth/signin');
+//   } else {
+//     // L'utilisateur est connecté ou la route ne nécessite pas d'authentification
+//     next();
+//   }
+// });
+
+// router.beforeEach((to, from, next) => {
+//   const isLoggedIn = isUserLoggedIn()
+
+//   if(!isLoggedIn && to.name != 'login' && to.name !== 'forgot-password' && to.name !== 'verification-codes' && to.name !== 'reset-password' ){
+//     return next('/login')
+//   }else{
+//     // if (canNavigate(to)) {
+//     // console.log("to:", to.name);
+//     if (to.meta.redirectIfLoggedIn && isLoggedIn) {
+//       return next('/')
+//     }
+//   // }
+//   else {
+//     if (isLoggedIn) {
+//       return next('/not-authorized')
+//     }
+//     else {
+//       if (to.name != 'login') {
+//         // console.log("test")
+//         return next({ name: 'login' })
+//         // , query: { to: to.name !== 'index' ? to.fullPath : undefined }
+//       }
+
+//     }
+//   }
+//   }
+
+//   return next()
+
+// });
+
 
 export default router
