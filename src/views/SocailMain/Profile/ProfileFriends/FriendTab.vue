@@ -36,16 +36,16 @@
                       <img
                         :src="
                           utilisateur.img_profile
-                            ? user.img_profile
+                            ? utilisateur.img_profile
                             : defaultImageUrl2
                         "
                         alt="image de profil"
-                        class="avatar-130 img-fluid"
+                        class="avatar-100 img-fluid"
                       />
                     </a>
                     <div class="friend-info ms-3">
-                      <h5>{{ utilisateur.nom }}</h5>
-                      <p class="mb-0">{{ utilisateur.prenom }}</p>
+                      <h5>{{ utilisateur.nom }} {{ utilisateur.prenom }}</h5>
+                      <p class="mb-0">{{ utilisateur.role }}</p>
                     </div>
                   </div>
                 </div>

@@ -10,11 +10,12 @@
       <template v-slot:body>
         <div class="d-flex align-items-center">
           <div class="user-img">
-
             <img
-              :src="defaultImageUrl2"
-              alt="image de profil par défaut"
-              class="avatar-40 img-fluid"
+              :src="
+                userData?.img_profile ? userData?.img_profile : defaultImageUrl2
+              "
+              alt="image de profil"
+              class="avatar-45 img-fluid"
             />
           </div>
           <form class="post-text ml-3 w-100">
@@ -94,10 +95,14 @@
           <div class="d-flex align-items-center">
             <div class="user-img">
               <img
-                              class="avatar-40 rounded"
-                              src="@/assets/images/user/user3.png"
-                              alt=""
-                            />
+                :src="
+                  userData?.img_profile
+                    ? userData?.img_profile
+                    : defaultImageUrl2
+                "
+                alt="image de profil"
+                class="avatar-45 img-fluid"
+              />
             </div>
             <form class="post-text ms-3 w-100" action="javascript:void();">
               <input
@@ -122,11 +127,11 @@
                 />
                 Picture
                 <input
-                  id="input-photo"
+                id="input-photo"
                   type="file"
                   ref="image_path"
                   style="display: none"
-                  @change="handleImageChange"
+                  @change="handleFileInputChange"
                 />
               </label>
             </li>
@@ -222,13 +227,34 @@ export default {
     };
   },
   methods: {
+    handleFileInputChange(event) {
+      const file = event.target.files[0];
+      const fileType = file.type.split("/")[1];
+      if (!file) {
+        console.error("No file selected.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log("nourrr ", fileType);
+        const base64String =
+          `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
+        this.fileToUpload = base64String;
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting file to base64:", error);
+      };
+    },
     async createPublication() {
       try {
         const token = localStorage.getItem("token");
+        console.log("base64: ", this.fileToUpload);
 
         if (
           !this.texte &&
-          !this.$refs.image_path.files[0] &&
+          !this.fileToUpload &&
           !this.$refs.video_path.files[0] &&
           !this.lien
         ) {
@@ -239,12 +265,17 @@ export default {
 
         let formData = new FormData();
         formData.append("texte", this.texte);
-        formData.append("image_path", this.$refs.image_path.files[0]);
+        formData.append("image_path", this.fileToUpload);
         formData.append("video_path", this.$refs.video_path.files[0]);
         formData.append("lien", this.lien);
         const response = await axios.post(
           "http://127.0.0.1:8000/api/creerPublication",
-          formData,
+          {
+            texte: this.texte,
+            image_path: this.fileToUpload,
+            video_path: this.$refs.video_path.files[0],
+            lien: this.lien,
+          },
           {
             headers: {
               "Content-Type": "multipart/form-data",

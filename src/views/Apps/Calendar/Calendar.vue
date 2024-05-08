@@ -43,7 +43,6 @@
         </div>
       </div>
     </div>
-
     <div class="col-md-12 col-lg-6">
       <form @submit.prevent="createEvent" id="eventForm">
         <div class="col-md-12 col-lg-8">
@@ -52,6 +51,7 @@
           >
             <div class="create-workform">
               <button
+                v-if="userData.role !== 'user'"
                 type="button"
                 class="btn btn-primary position-relative d-flex align-items-center justify-content-between"
                 data-bs-toggle="modal"
@@ -122,7 +122,7 @@
                   class="form-control"
                   name="photo"
                   accept="image/*"
-                  @change="handleFileChange"
+                  @change="handleFileInputChange"
                 />
               </div>
               <div class="form-group">
@@ -140,6 +140,7 @@
                   {{ errors.date_event }}
                 </p>
               </div>
+
               <div class="col-md-12 mb-3">
                 <label
                   for="eventPlace"
@@ -174,7 +175,13 @@
               </div>
             </div>
             <div class="d-flex justify-content-end">
-              <button type="submit" class="submit-button">Add Event</button>
+              <button
+                type="submit"
+                data-bs-dismiss="modal"
+                class="submit-button"
+              >
+                Add Event
+              </button>
             </div>
           </model-body>
         </modal>
@@ -190,7 +197,7 @@
         </div>
       </div>
     </div>
-    <modal
+    <!-- <modal
       id="modalcal"
       tabindex="-1"
       title="Create Post"
@@ -206,7 +213,7 @@
           data-bs-dismiss="modal"
         ></button>
       </model-header>
-    </modal>
+    </modal> -->
   </div>
 </template>
 
@@ -321,6 +328,10 @@ export default {
       nbr_max: "",
       image: null,
       errors: {},
+      userData: JSON.parse(localStorage.getItem("userData") || "null"),
+      event: {
+        image: " ",
+      },
       eventsList: [],
       defaultImageUrl: require("../../../assets/images/DefaultEvent.png"),
       name: "BlogList",
@@ -328,8 +339,27 @@ export default {
   },
 
   methods: {
+    handleFileInputChange(event) {
+      const file = event.target.files[0];
+      const fileType = file.type.split("/")[1];
+      if (!file) {
+        console.error("No file selected.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log("nourrr ", fileType);
+        const base64String =
+          `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
+        this.fileToUpload = base64String;
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting file to base64:", error);
+      };
+    },
     async createEvent() {
-      console.log("Méthode createEvent appelée.", this.image);
       const errors = this.validateInput();
       if (Object.keys(errors).length > 0) {
         this.errors = errors;
@@ -343,15 +373,19 @@ export default {
           lieu_event: this.lieu_event,
           nbr_max: this.nbr_max,
           date_event: this.date_event,
-          image: this.image,
+          image: this.fileToUpload,
         });
-
+        console.log("base64: ", this.fileToUpload);
+        if (!this.fileToUpload) {
+          console.error("Aucun fichier sélectionné.");
+          return;
+        }
         const formData = new FormData();
         formData.append("lieu_event", this.lieu_event);
         formData.append("date_event", this.date_event);
         formData.append("nbr_max", this.nbr_max);
         formData.append("description", this.description);
-        formData.append("image", this.image);
+        formData.append("image", this.fileToUpload);
 
         const response = await axios.post(
           "http://127.0.0.1:8000/api/creerEvent",
@@ -360,17 +394,17 @@ export default {
             lieu_event: this.lieu_event,
             nbr_max: this.nbr_max,
             date_event: this.date_event,
-            image: this.image,
+            image: this.fileToUpload,
           },
           {
             headers: {
-              "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
           }
         );
 
         const responseData = response.data;
+        console.log(responseData.image);
         alert(responseData.message);
         await this.showEvents();
       } catch (error) {
@@ -379,10 +413,34 @@ export default {
       }
     },
 
-    handleImageUpload(event) {
+    onFileChange(event) {
       const file = event.target.files[0];
-      this.image = file;
-      console.log("Image sélectionnée :", file);
+      if (!file) {
+        console.log("Aucun fichier sélectionné.");
+        return;
+      }
+
+      this.getBase64(file)
+        .then((base64) => {
+          // Stocker le fichier en format base64 dans la variable image du composant
+          this.image = base64;
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la conversion en base64:", error);
+        });
+    },
+    getBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => {
+          const base64 = reader.result.split(",")[1];
+          resolve(base64);
+        };
+
+        reader.onerror = (error) => reject(error);
+      });
     },
 
     validateInput() {
@@ -410,11 +468,13 @@ export default {
     editEvent(id) {
       this.$router.push(`/EditEvent/${id}`);
     },
-
     async showEvents() {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/events");
-        this.eventsList = response.data;
+        this.eventsList = response.data.map((event) => ({
+          ...event,
+          imageUrl: `http://127.0.0.1:8000/storage/${event.image}`,
+        }));
       } catch (error) {
         console.error("Erreur lors de la récupération des événements :", error);
       }
@@ -477,6 +537,9 @@ export default {
         console.error("Erreur lors de la suppression de l'événement :", error);
       }
     },
+  },
+  mounted() {
+    this.userData = JSON.parse(localStorage.getItem("userData") || "null");
   },
 
   created() {

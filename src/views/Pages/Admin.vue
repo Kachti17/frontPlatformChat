@@ -215,7 +215,7 @@
                 <div class="card-body text-center">
                     <flat-picker v-model="inlineDate" className="d-none" :config="inlineDatepicker" placeholder="select Date"></flat-picker>
                 </div>
-                
+
             </div>
         </div>
         <div class="col-lg-4 col-md-6">

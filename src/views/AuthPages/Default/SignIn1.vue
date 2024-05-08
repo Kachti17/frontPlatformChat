@@ -11,6 +11,9 @@
       <div class="row no-gutters">
         <div class="col-md-6 text-center pt-5">
           <div class="sign-in-detail text-white">
+            <br />
+            <br />
+            <br />
             <!-- <a class="sign-in-logo mb-5" href="#"><img src="@/assets/images/logo-full.png" class="img-fluid" alt="logo"></a> -->
             <!-- Swiper pour le carrousel d'images -->
             <Swiper :options="options">
@@ -24,19 +27,14 @@
                 <h4 class="mb-1 text-white">Gérez vos commandes</h4>
                 <p>Il est établi de longue date qu'un lecteur sera distrait par le contenu lisible.</p>
               </SwiperSlide> -->
-              <SwiperSlide class="item">
+              <SwiperSlide class="item text-start">
                 <img
-                  src="@/assets/images/digitrendsBlue.jpg"
+                  src="@/assets/images/digLogo.png"
                   class="img-fluid mb-4"
                   alt="logo"
                   width="200px"
                   height="200px"
                 />
-                <h4 class="mb-1 text-white">Gérez vos commandes</h4>
-                <p>
-                  Il est établi de longue date qu'un lecteur sera distrait par
-                  le contenu lisible.
-                </p>
               </SwiperSlide>
             </Swiper>
           </div>
@@ -50,7 +48,7 @@
             <form class="mt-4" @submit.prevent="onSubmit">
               <div class="form-group">
                 <label class="form-label" for="exampleInputEmail1"
-                  >E-mail address</label
+                  >E-mail address *</label
                 >
                 <input
                   type="email"
@@ -63,7 +61,7 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="exampleInputPassword1"
-                  >Password</label
+                  >Password *</label
                 >
                 <router-link
                   :to="{ name: 'auth1.recoverpassword1' }"
@@ -169,3 +167,8 @@ export default {
   },
 };
 </script>
+<style>
+.text-start {
+  text-align: left !important;
+}
+</style>

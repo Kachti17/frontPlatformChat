@@ -22,7 +22,7 @@
                       <img
                         :src="
                           utilisateur.img_profile
-                            ? user.img_profile
+                            ? utilisateur.img_profile
                             : defaultImageUrl
                         "
                         alt="image de profil"

@@ -1,17 +1,16 @@
 <template>
-  <div class="row row-cols-1">
-    <div class="col-sm-20" style="height: 300%">
+  <div class="row row-cols-1 w-100 mx-auto">
+    <div class="col-sm-28" style="height: 480%">
       <div
         class="card position-relative inner-page-bg bg-primary"
         style="height: 150px"
       >
         <div class="inner-page-title">
-          <h3 class="text-white">Page de la Table Éditable</h3>
-          <p class="text-white">Lorem ipsum</p>
+          <h3 class="text-white">Table of Users</h3>
         </div>
       </div>
     </div>
-    <div class="col-sm-40">
+    <div class="col-sm-60">
       <iq-card class="w-100">
         <template v-slot:headerTitle>
           <h4 class="card-title">List of Users</h4>
@@ -58,6 +57,7 @@
                     <th>Email</th>
                     <th>Password</th>
                     <th>Phone Number</th>
+                    <th>Role</th>
                     <th>Created At</th>
                     <th>Updated At</th>
                     <th>Delete</th>
@@ -70,6 +70,7 @@
                     <td>{{ user.email }}</td>
                     <td class="password-cell">{{ user.password }}</td>
                     <td>{{ user.tel }}</td>
+                    <td>{{ user.role }}</td>
                     <td>{{ user.created_at }}</td>
                     <td>{{ user.updated_at }}</td>
                     <td>

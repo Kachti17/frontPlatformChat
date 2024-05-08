@@ -22,9 +22,10 @@
           <div class="d-flex align-items-center">
             <div class="user-img">
               <img
-                src="@/assets/images/user/user3.png"
-                alt="userimg"
-                class="avatar-60 rounded-circle img-fluid"
+                :src="
+                  userData.img_profile ? userData.img_profile : defaultImageUrl2
+                "
+                alt="image de profil"
               />
             </div>
 
@@ -37,6 +38,21 @@
                 required
                 style="border: none"
               />
+
+              <img
+                v-if="contenu.image_path"
+                :src="contenu.image_path"
+                alt="Selected Image"
+                style="max-width: 70%; max-height: 70px; margin-top: 10px"
+              />
+              <button
+                v-if="contenu.image_path"
+                type="button"
+                class="btn btn-danger mt-2"
+                @click="effacerImage"
+              >
+                Effacer l'image
+              </button>
             </form>
           </div>
           <br />
@@ -44,19 +60,20 @@
 
           <ul class="post-opt-block d-flex list-inline m-0 p-0 flex-wrap">
             <li class="me-3 mb-md-0 mb-2">
-              <label for="input-photo" class="btn btn-soft-primary">
+              <label for="input-photo-social" class="btn btn-soft-primary">
                 <img
                   src="../../../../assets/images/small/07.png"
                   alt="icon"
                   class="img-fluid me-2"
                 />
-                Picture
+                Pictureeeee
                 <input
-                  id="input-photo"
+                  id="input-photo-social"
                   type="file"
                   ref="image_path"
                   style="display: none"
-                  @change="handleImageChange"
+                  class="form-control"
+                  @change="handleFileInputChange2"
                 />
               </label>
             </li>
@@ -105,7 +122,8 @@
           <button
             class="btn btn-primary d-block w-100 mt-3"
             type="button"
-            @click="modifierPublication()"
+            data-bs-dismiss="modal"
+            @click="modifierPublication(publicationId)"
           >
             Update
           </button>
@@ -140,7 +158,7 @@
                       {{ userData.nom }} {{ userData.prenom }}
                     </h5>
                     <p class="mb-0 text-primary">
-                      {{ formatDateTime(post.contenu.created_at) }}
+                      {{ formatDateTime(post.contenu.updated_at) }}
                     </p>
                   </div>
 
@@ -180,7 +198,7 @@
                             id="post-modal-data"
                             body-class="iq-card iq-card-block iq-card-stretch iq-card-height"
                           >
-                            <modal
+                            <!-- <modal
                               id="newModal"
                               dialogClass="modal-fullscreen-sm-down  modal-margin"
                               tabindex="-1"
@@ -224,6 +242,24 @@
                                       required
                                       style="border: none"
                                     />
+                                    <img
+                                      v-if="contenu.image_path"
+                                      :src="contenu.image_path"
+                                      alt="Selected Image"
+                                      style="
+                                        max-width: 70%;
+                                        max-height: 70px;
+                                        margin-top: 10px;
+                                      "
+                                    />
+                                    <button
+                                      v-if="contenu.image_path"
+                                      type="button"
+                                      class="btn btn-danger mt-2"
+                                      @click="effacerImage"
+                                    >
+                                      Effacer l'image
+                                    </button>
                                   </form>
                                 </div>
                                 <br />
@@ -234,7 +270,7 @@
                                 >
                                   <li class="me-3 mb-md-0 mb-2">
                                     <label
-                                      for="input-photo"
+                                      for="input-photo-social"
                                       class="btn btn-soft-primary"
                                     >
                                       <img
@@ -242,13 +278,14 @@
                                         alt="icon"
                                         class="img-fluid me-2"
                                       />
-                                      Picture
+                                      Pictureeeee
                                       <input
-                                        id="input-photo"
+                                        id="input-photo-social"
                                         type="file"
                                         ref="image_path"
                                         style="display: none"
-                                        @change="handleImageChange"
+                                        class="form-control"
+                                        @change="handleFileInputChange2"
                                       />
                                     </label>
                                   </li>
@@ -300,7 +337,7 @@
                                   </div>
                                 </ul>
                               </model-body>
-                            </modal>
+                            </modal> -->
                           </iq-card>
                         </div>
                         <a
@@ -335,7 +372,11 @@
               </a>
             </template>
             <template v-if="post.contenu.image_path !== null">
-              <img :src="post.contenu.image_path" alt="Image du post" />
+              <img
+                :src="post.contenu.image_path"
+                alt="Image du post"
+                class="img-fluid rounded w-25"
+              />
             </template>
             <template v-if="post.contenu.video_path !== null">
               <div class="ratio ratio-16x9">
@@ -358,17 +399,23 @@
                     <div class="dropdown" @click.stop="">
                       <span
                         class="dropdown-toggle"
-                        data-bs-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded="false"
                         role="button"
                       >
                         <img
                           ref="reactionImage"
-                          src="@/assets/images/icon/01.png"
+                          :src="
+                            userReactionData[post.id] === true
+                              ? defaultImageUrl3
+                              : defaultImageUrl2
+                          "
                           class="img-fluid"
                           alt=""
-                          @click="handleReaction(post.id)"
+                          @click="
+                            handleReactionOrUnreact(post.id),
+                              checkUserReaction(post.id)
+                          "
                         />
                       </span>
                     </div>
@@ -442,12 +489,17 @@
             </div>
             <hr />
             <div class="total-comment-block">
-              <h3 class="mb-3">commentaires</h3>
               <div
                 v-for="commentaire in post.commentaires"
                 :key="commentaire.id"
               >
-                <template v-if="commentaire.pub_id === post.id">
+                <template
+                  v-if="
+                    commentaire.pub_id === post.id &&
+                    commentaire.pub_id === post.id &&
+                    (cIndex < commentLimit || showAllComments)
+                  "
+                >
                   <div class="d-flex flex-wrap mt-3">
                     <div class="user-img">
                       <img
@@ -461,13 +513,16 @@
                       />
                     </div>
                     <div class="comment-data-block ms-3">
-                      <h6>
-                        {{ commentaire.user.prenom }}
-                      </h6>
+                      <h5>
+                        <b
+                          >{{ commentaire.user.nom }}
+                          {{ commentaire.user.prenom }}</b
+                        >
+                      </h5>
 
-                      <p class="mb-0">
+                      <h5 class="font-normal">
                         {{ commentaire.contenu_comm }}
-                      </p>
+                      </h5>
                       <div
                         class="d-flex flex-wrap align-items-center comment-activity"
                       >
@@ -532,6 +587,7 @@
                   </div>
                 </template>
               </div>
+              <button @click="loadMoreComments">Load More Comments</button>
             </div>
 
             <form
@@ -542,7 +598,7 @@
                 type="text"
                 class="form-control rounded"
                 placeholder="Enter Your Comment"
-                v-model="nouveauCommentaire"
+                v-model="nouveauxCommentaires[post.id]"
               />
               <button type="submit" class="btn btn-primary mr-2">
                 Ajouter Commentaire
@@ -562,6 +618,8 @@ export default {
   //components: { AddSocialPost },
   data() {
     return {
+      userReactionData: {},
+      commentLimit: 2,
       defaultpic: require("@/assets/images/user/user3.png"),
       userLoggedInID: "",
       user: null,
@@ -573,6 +631,9 @@ export default {
       waitingForModificationPublications: [],
       showApproved: true,
       newCommentContent: "",
+      nouveauxCommentaires: {},
+      defaultImageUrl2: require("../../../../assets/images/icon/01.png"),
+      defaultImageUrl3: require("../../../../assets/images/icon/02.png"),
       publicationId: null,
       selectedPostId: null,
       editPostDialog: false,
@@ -599,19 +660,107 @@ export default {
   mounted() {
     this.userData = JSON.parse(localStorage.getItem("userData") || "null");
     this.filterByUserId();
-    this.posts.forEach((post) => {
-      this.loadCommentaires(post.id);
-    });
+    // this.posts.forEach((post) => {
+    //   this.loadCommentaires(post.id);
+    // });
     this.loadUserDetails();
   },
 
   methods: {
-    loadCommentaires(publicationId) {
+    loadMoreComments() {
+      this.commentLimit += 2;
+      this.filterByUserId();
+    },
+    async confirmEdit() {
+      try {
+        const token = localStorage.getItem("token"); // Récupérer le token depuis le local storage
+
+        const response = await axios.put(
+          `http://127.0.0.1:8000/api/modifierCommentaire/${this.commentToEdit.id}`,
+          {
+            contenu_comm: this.editedComment,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Ajouter le token d'authentification dans les en-têtes
+            },
+          }
+        );
+
+        console.log(response.data);
+        this.filterByUserId();
+        this.closeEditModal();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async checkUserReaction(pubId) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/publication/${pubId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // console.log(
+        //   "Réaction de l'utilisateur pour la publication",
+        //   pubId,
+        //   ":",
+        //   response.data
+        // );
+        this.userReactionData[pubId] = response.data;
+        // console.log("ekhdem", pubId, ":", this.userReactionData);
+        return this.userReactionData;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    },
+    async handleReactionOrUnreact(pubId) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `http://127.0.0.1:8000/api/publication/${pubId}/react-or-unreact`,
+          null,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        this.filterByUserId();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    openEditModal(commentaire) {
+      this.commentToEdit = commentaire;
+      this.editedComment = commentaire.contenu_comm;
+      this.isEditModalOpen = true;
+    },
+
+    closeEditModal() {
+      this.isEditModalOpen = false;
+      this.commentToEdit = null;
+      this.editedComment = "";
+    },
+    loadCommentaires(postId, nombreCommentaires) {
       axios
-        .get(`http://127.0.0.1:8000/api/commentaires/${publicationId}`)
+        .get(`http://127.0.0.1:8000/api/commentaires/${postId}`, {
+          params: {
+            nombreCommentaires: nombreCommentaires,
+          },
+        })
         .then((response) => {
-          console.log("fgg", response.data);
-          this.commentaires = response.data;
+          this.commentaires = response.data.commentaires;
+          console.log("Commentaires chargés :", this.commentaires); // Vérification des données chargées
+          console.log("gegeg", postId);
         })
         .catch((error) => {
           console.error(error);
@@ -620,6 +769,21 @@ export default {
           );
         });
     },
+
+    // loadCommentaires(publicationId) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/commentaires/${publicationId}`)
+    //     .then((response) => {
+    //       console.log("fgg", response.data);
+    //       this.commentaires = response.data;
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //       alert(
+    //         "Erreur lors du chargement des commentaires. Veuillez réessayer plus tard."
+    //       );
+    //     });
+    // },
     filterByUserId() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
@@ -631,12 +795,15 @@ export default {
         .then((response) => {
           this.posts = response.data;
           this.loadUserDetails();
-          this.posts.forEach((post) => {
-            this.loadCommentaires(post.id);
-            console.log("eeee1111", post.id);
+          for (const publication of this.posts) {
+            console.log("fefe", this.publication);
 
-            console.log("eeee", this.loadCommentaires(post.id));
-          });
+            if (publication.isApproved === 1) {
+              this.loadCommentaires(publication.id, 2);
+              // console.log("gege", this.loadCommentaires);
+              this.checkUserReaction(publication.id);
+            }
+          }
 
           console.log("psts", this.posts);
         })
@@ -726,7 +893,7 @@ export default {
     },
 
     ajouterCommentaire(publicationId) {
-      const contenuComm = this.nouveauCommentaire.trim();
+      const contenuComm = this.nouveauxCommentaires[publicationId];
 
       if (contenuComm) {
         const token = localStorage.getItem("token");
@@ -745,7 +912,7 @@ export default {
           )
           .then((response) => {
             console.log(response.data);
-            this.nouveauCommentaire = "";
+            this.nouveauxCommentaires[publicationId] = "";
             this.filterByUserId();
           })
           .catch((error) => {
@@ -774,26 +941,70 @@ export default {
         });
     },
 
+    handleFileInputChange2(event) {
+      const file = event.target.files[0];
+      const fileType = file.type.split("/")[1];
+      if (!file) {
+        console.error("No file selected.");
+        return;
+      }
 
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log("test oussema ");
+
+        console.log("nourrr ", fileType);
+        const base64String =
+          `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
+        // this.fileToUpload = base64String;
+        this.contenu.image_path = base64String;
+        console.log("oussema ", this.contenu.image_path);
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting file to base64:", error);
+      };
+    },
 
     modifierPublication(publicationId) {
       const token = localStorage.getItem("token");
 
       const headers = { Authorization: `Bearer ${token}` };
+      if (this.contenu.image_path && this.fileToUpload) {
+        this.contenu.image_path = this.fileToUpload;
+      } else if (!this.contenu.image_path) {
+        this.effacerImage();
+      }
 
+      console.log("tswr:", this.contenu.image_path);
       axios
         .put(
           `http://127.0.0.1:8000/api/modifierPublication/${this.publication.id}`,
           this.contenu,
           { headers }
         )
+        .then((response) => {
+          console.log("Publication updated:", response.data);
+          this.filterByUserId();
+          this.loadWaitingForModificationPublications();
+        })
+
         .catch((error) => {
           console.error(
             "Erreur lors de la modification de la publication:",
             error.response.data.error
           );
         });
-      window.location.reload();
+
+      // window.location.reload();
+    },
+    UpdatePost(item) {
+      this.publication = item;
+      this.contenu = item.contenu;
+      this.showLinkInput = true;
+    },
+    effacerImage() {
+      this.contenu.image_path = null; // ou null
     },
     formatDateTime(datetime) {
       const options = {

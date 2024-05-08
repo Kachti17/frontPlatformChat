@@ -9,7 +9,7 @@
           data-bs-toggle="tooltip"
           title="Social"
           data-bs-placement="right"
-          >-</span
+          ></span
         >
       </a>
     </li>
@@ -24,29 +24,27 @@
       </router-link>
     </li>
     <li class="nav-item">
-          <router-link
-            :class="
-              checkActive('social.profilemain') ? 'active nav-link' : 'nav-link'
-            "
-            :to="{ name: 'social.profilemain' }"
-          >
-
-            <i class="icon material-symbols-outlined"> person </i>
-            <span class="item-name"> Profile </span>
-          </router-link>
-        </li>
+      <router-link
+        :class="
+          checkActive('social.profilemain') ? 'active nav-link' : 'nav-link'
+        "
+        :to="{ name: 'social.profilemain' }"
+      >
+        <i class="icon material-symbols-outlined"> person </i>
+        <span class="item-name"> Profile </span>
+      </router-link>
+    </li>
     <li class="nav-item">
-          <router-link
-            :class="
-              checkActive('social.friendlist') ? 'active nav-link' : 'nav-link'
-            "
-            :to="{ name: 'social.friendlist' }"
-          >
-
-            <i class="icon material-symbols-outlined"> people </i>
-            <span class="item-name">Users</span>
-          </router-link>
-        </li>
+      <router-link
+        :class="
+          checkActive('social.friendlist') ? 'active nav-link' : 'nav-link'
+        "
+        :to="{ name: 'social.friendlist' }"
+      >
+        <i class="icon material-symbols-outlined"> people </i>
+        <span class="item-name">Users</span>
+      </router-link>
+    </li>
     <!-- <li class="nav-item">
         <router-link :class="checkActive('social.group') ? 'active nav-link' : 'nav-link'" aria-current="page"
             :to="{name: 'social.group'}">
@@ -115,6 +113,19 @@
         <span class="item-name">Event</span>
       </router-link>
     </li>
+    <li class="nav-item">
+      <router-link
+        :class="
+          checkActive('auth1.recoverpassword1') ? 'active nav-link' : 'nav-link'
+        "
+        :to="{ name: 'auth1.recoverpassword1' }"
+      >
+        <i class="icon material-symbols-outlined filled">
+          fiber_manual_record
+        </i>
+        <span class="item-name">Recover Password</span>
+      </router-link>
+    </li>
     <!-- <li class="nav-item">
         <router-link :class="checkActive('social.birthday') ? 'active nav-link' : 'nav-link'" aria-current="page"
             :to="{name: 'social.birthday'}">
@@ -142,7 +153,7 @@
             <span class="item-name">Music</span>
         </router-link>
     </li> -->
-    <li class="nav-item static-item">
+    <li class="nav-item static-item" v-if="userData?.role == 'admin'">
       <a class="nav-link static-item disabled" href="#" tabindex="-1">
         <span class="default-icon">ADMIN</span>
         <span
@@ -376,6 +387,7 @@
     </li> -->
     <li class="nav-item">
       <a
+        v-if="userData?.role == 'admin'"
         class="nav-link"
         data-bs-toggle="collapse"
         href="#sidebar-auth"
@@ -418,22 +430,8 @@
             <span class="item-name">Register</span>
           </router-link>
         </li>
-        <li class="nav-item">
-          <router-link
-            :class="
-              checkActive('auth1.recoverpassword1')
-                ? 'active nav-link'
-                : 'nav-link'
-            "
-            :to="{ name: 'auth1.recoverpassword1' }"
-          >
-            <i class="icon material-symbols-outlined filled">
-              fiber_manual_record
-            </i>
-            <span class="item-name">Recover Password</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
+
+        <!-- <li class="nav-item">
           <router-link
             :class="
               checkActive('auth1.confirmmail1') ? 'active nav-link' : 'nav-link'
@@ -445,8 +443,8 @@
             </i>
             <span class="item-name">Confirm Mail</span>
           </router-link>
-        </li>
-        <li class="nav-item">
+        </li> -->
+        <!-- <li class="nav-item">
           <router-link
             :class="
               checkActive('auth1.lockscreen1') ? 'active nav-link' : 'nav-link'
@@ -458,7 +456,7 @@
             </i>
             <span class="item-name">Lock Screen</span>
           </router-link>
-        </li>
+        </li> -->
       </ul>
     </li>
     <!-- <li class="nav-item">
@@ -509,7 +507,7 @@
             <span class="item-name">Blank Page</span>
         </router-link>
     </li> -->
-    <li class="nav-item">
+    <!-- <li class="nav-item" v-if="userData?.role !== 'user'">
       <router-link
         :class="
           checkActive('extra-pages.admin') ? 'active nav-link' : 'nav-link'
@@ -519,7 +517,7 @@
         <i class="icon material-symbols-outlined"> admin_panel_settings </i>
         <span class="item-name">Admin</span>
       </router-link>
-    </li>
+    </li> -->
     <!-- <li class="nav-item">
         <router-link :class="checkActive('default.coming-soon') ? 'active nav-link' : 'nav-link'"
             :to="{name: 'default.coming-soon'}">
@@ -795,27 +793,8 @@
             </li>
         </ul>
     </li> -->
-    <li class="nav-item">
-      <a
-        :class="checkActive(tables) ? 'active nav-link' : 'nav-link'"
-        data-bs-toggle="collapse"
-        href="#sidebar-table"
-        role="button"
-        :aria-expanded="checkActive(tables)"
-        aria-controls="sidebar-table"
-      >
-        <i class="icon material-symbols-outlined"> table_chart </i>
-        <span class="item-name">Managment</span>
-        <i class="right-icon material-symbols-outlined">chevron_right</i>
-      </a>
-      <ul
-        :class="
-          checkActive(tables) ? 'show sub-nav collapse' : 'sub-nav collapse'
-        "
-        id="sidebar-table"
-        data-bs-parent="#sidebar-menu"
-      >
-        <li class="nav-item">
+
+    <!-- <li class="nav-item">
           <router-link
             :class="checkActive('table.basic') ? 'active nav-link' : 'nav-link'"
             :to="{ name: 'table.basic' }"
@@ -826,22 +805,17 @@
             <i class="sidenav-mini-icon"> BT </i>
             <span class="item-name">Basic Tables</span>
           </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            :class="
-              checkActive('table.datatable') ? 'active nav-link' : 'nav-link'
-            "
-            :to="{ name: 'table.datatable' }"
-          >
-            <i class="icon material-symbols-outlined filled">
-              fiber_manual_record
-            </i>
-            <i class="sidenav-mini-icon"> D </i>
-            <span class="item-name">User Managment</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
+        </li> -->
+    <li class="nav-item" v-if="userData?.role == 'admin'">
+      <router-link
+        :class="checkActive('table.datatable') ? 'active nav-link' : 'nav-link'"
+        :to="{ name: 'table.datatable' }"
+      >
+        <i class="icon material-symbols-outlined"> admin_panel_settings </i>
+        <span class="item-name">User Managment</span>
+      </router-link>
+    </li>
+    <!-- <li class="nav-item">
           <router-link
             :class="
               checkActive('table.editable') ? 'active nav-link' : 'nav-link'
@@ -854,9 +828,8 @@
             <i class="sidenav-mini-icon"> E </i>
             <span class="item-name">Editable Table</span>
           </router-link>
-        </li>
-      </ul>
-    </li>
+        </li> -->
+
     <!-- <li class="nav-item">
         <a :class="checkActive(forms) ? 'active nav-link' : 'nav-link'" data-bs-toggle="collapse" href="#sidebar-form" role="button" :aria-expanded="checkActive(forms)"
             aria-controls="sidebar-form">
@@ -978,6 +951,8 @@ export default {
   name: "DefaultSidebar",
   data() {
     return {
+      userData: JSON.parse(localStorage.getItem("userData") || "null"),
+
       profiles: [
         "social.profile1",
         "social.profile2",
@@ -1078,6 +1053,9 @@ export default {
         return true;
       }
     },
+  },
+  mounted() {
+    this.userData = JSON.parse(localStorage.getItem("userData") || "null");
   },
 };
 </script>

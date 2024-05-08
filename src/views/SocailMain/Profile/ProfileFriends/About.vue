@@ -15,7 +15,7 @@
               <h6>Role:</h6>
             </div>
             <div class="col-9">
-              <p class="mb-0">{{}}</p>
+              <p class="mb-0">{{ userData.role }}</p>
             </div>
             <div class="col-3">
               <h6>Name:</h6>

@@ -14,7 +14,11 @@
             <div class="user-detail text-center mb-3">
               <div class="profile-img">
                 <img
-                  :src="user.img_profile ? user.img_profile : defaultImageUrl"
+                  :src="
+                    userData.img_profile
+                      ? userData.img_profile
+                      : defaultImageUrl
+                  "
                   alt="profile-img"
                   class="avatar-130 img-fluid"
                 />
@@ -39,20 +43,6 @@
                         class="img-fluid rounded"
                         alt="facebook"
                     /></a>
-                  </li>
-                </ul>
-              </div>
-              <div class="social-info">
-                <ul
-                  class="social-data-block d-flex align-items-center justify-content-between list-inline p-0 m-0"
-                >
-                  <li
-                    v-for="(i, index) in soicalInfo"
-                    :key="index"
-                    class="text-center ps-3"
-                  >
-                    <h6>{{ i.name }}</h6>
-                    <p class="mb-0">{{ i.value }}</p>
                   </li>
                 </ul>
               </div>
@@ -112,32 +102,7 @@
         >
           <div class="iq-card-body p-0">
             <div class="row">
-              <div class="col-lg-4">
-                <iq-card>
-                  <template v-slot:headerTitle>
-                    <h4 class="card-title">Friends</h4>
-                  </template>
-                  <template v-slot:headerAction>
-                    <p class="m-0"><a href="javacsript:void();">Add New </a></p>
-                  </template>
-                  <template v-slot:body>
-                    <ul class="profile-img-gallary p-0 m-0 list-unstyled">
-                      <li v-for="(friend, index) in friends" :key="index">
-                        <a
-                          href="require('../../../assets/images/gallery/grid/03.jpg')"
-                        >
-                          <img
-                            :src="friend.img"
-                            alt="gallary-image"
-                            class="img-fluid"
-                        /></a>
-                        <h6 class="mt-2 text-center">{{ friend.name }}</h6>
-                      </li>
-                    </ul>
-                  </template>
-                </iq-card>
-              </div>
-              <div class="col-lg-8">
+              <div class="col-lg-12">
                 <div id="post-modal-data" class="iq-card">
                   <AddSocialPostNew @addPost="addPost"></AddSocialPostNew>
                   <div v-for="post in filteredPublications" :key="post.id">
@@ -179,7 +144,6 @@
         </tab-content-item>
       </div>
     </div>
-    
   </div>
 </template>
 <script>
@@ -196,31 +160,7 @@ export default {
     socialvue.index();
     this.userData = JSON.parse(localStorage.getItem("userData") || "null");
     console.log(this.userData);
-    // this.loadApprovedPublications();
-    // axios
-    //   .get("http://127.0.0.1:8000/api/user", {
-    //     headers: {
-    //       Authorization: "Bearer " + localStorage.getItem("token"),
-    //     },
-    //   })
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     this.user.nom = response.data.nom;
-    //     this.user.prenom = response.data.prenom;
-    //     if (response.data.img_profile !== null) {
-    //       this.user.img_profile = response.data.img_profile;
-    //     } else {
-    //       // Si img_profile est null, utilisez l'image par défaut
-    //       this.user.img_profile = this.defaultImageUrl;
-    //     }
-    //   })
-
-    //   .catch((error) => {
-    //     console.error(
-    //       "Erreur lors du chargement des détails de l'utilisateur :",
-    //       error
-    //     );
-    //   });
+    console.log("NOMBRE", this.filteredPublications.length);
   },
   components: {
     FriendTab,
@@ -250,22 +190,6 @@ export default {
         require("../../../assets/images/icon/12.png"),
         require("../../../assets/images/icon/13.png"),
       ],
-      friends: [
-        {
-          img: require("../../../assets/images/user/05.jpg"),
-          name: "Anna Rexia",
-        },
-        {
-          img: require("../../../assets/images/user/06.jpg"),
-          name: "Tara Zona",
-        },
-      ],
-      soicalInfo: [
-        {
-          name: "Post",
-          value: 690,
-        },
-      ],
     };
   },
 
@@ -281,6 +205,7 @@ export default {
         .then((response) => {
           this.filteredPublications = response.data;
           console.log(this.filteredPublications);
+          this.nombreDePostes = this.filteredPublications.length;
         })
         .catch((error) => {
           console.error(
@@ -307,74 +232,7 @@ export default {
           );
         });
     },
-    // loadApprovedPublications() {
-    //   axios
-    //     .get("http://127.0.0.1:8000/api/publicationApprouvée")
-    //     .then((response) => {
-    //       this.approvedPublications = response.data;
-    //       console.log(this.approvedPublications);
-
-    //       this.approvedPublications.forEach((post) => {
-    //         //console.log(post.id);
-    //         if (post.isApproved === 1) {
-    //           this.loadCommentaires(post.id);
-    //           console.log(this.loadCommentaires(post.id));
-    //         }
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //       alert(
-    //         "Erreur lors du chargement des publications approuvées. Veuillez réessayer plus tard."
-    //       );
-    //     });
-    // },
-    // modifierPublication(publicationId) {
-    //   const token = localStorage.getItem("token");
-
-    //   const headers = { Authorization: `Bearer ${token}` };
-
-    //   axios
-    //     .put(
-    //       `http://127.0.0.1:8000/api/modifierPublication/${this.publication.id}`,
-    //       this.contenu,
-    //       { headers }
-    //     )
-    //     .catch((error) => {
-    //       console.error(
-    //         "Erreur lors de la modification de la publication:",
-    //         error.response.data.error
-    //       );
-    //     });
-    //   window.location.reload();
-    // },
-    // UpdatePost(item) {
-    //   this.publication = item;
-    //   this.contenu = item.contenu;
-    //   this.showLinkInput = true;
-    // },
-    // supprimerPublication(publicationId) {
-    //   const token = localStorage.getItem("token");
-
-    //   const headers = { Authorization: `Bearer ${token}` };
-
-    //   axios
-    //     .delete(
-    //       `http://127.0.0.1:8000/api/supprimerPublication/${publicationId}`,
-    //       { headers }
-    //     )
-    //     .then((response) => {
-    //       console.log(response.data.message);
-    //       this.loadApprovedPublications();
-    //       window.location.reload();
-    //     })
-    //     .catch((error) => {
-    //       console.error(
-    //         "Erreur lors de la suppression de la publication:",
-    //         error.response.data.error
-    //       );
-    //     });
-    // },
+    
   },
 };
 </script>

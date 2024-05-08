@@ -47,20 +47,27 @@
                 <h4 class="card-title">Personal Information</h4>
               </template>
               <template v-slot:body>
-                <form @submit.prevent="saveChanges()">
-                  <div class="form-group row align-items-center">
-    <div class="col-md-12">
-      <div class="profile-img-edit">
-        <img
-          :src="
-            userData.img_profile
-              ? userData.img_profile
-              : defaultImageUrl2
-          "
-          alt="image de profil"
-          class="avatar-130 img-fluid"
-        />
-        <div class="p-image">
+                <div class="profile-img-edit">
+                  <img
+                    :src="
+                      userData.img_profile
+                        ? userData.img_profile
+                        : defaultImageUrl2
+                    "
+                    alt="image de profil"
+                    class="avatar-130 img-fluid"
+                  />
+                  <input
+                    type="file"
+                    id="image"
+                    @change="handleFileInputChange"
+                    class="form-control"
+                  />
+                  <!-- <button @click="validateUpload" class="btn btn-primary">
+                    Valider l'upload
+                  </button> -->
+                </div>
+                <!-- <div class="p-image">
           <i
             class="ri-pencil-line upload-button text-white"
           ></i>
@@ -71,10 +78,12 @@
             @change="handleFileUpload"
           />
           <button @click="uploadProfileImage">Télécharger l'image de profil</button>
-        </div>
-      </div>
-    </div>
-  </div>
+        </div> -->
+
+                <form @submit.prevent="saveChanges()">
+                  <div class="form-group row align-items-center">
+                    <div class="col-md-12"></div>
+                  </div>
                   <div class="row align-items-center">
                     <div class="form-group col-sm-6" v-if="user">
                       <label for="fname" class="form-label">First Name *</label>
@@ -205,6 +214,10 @@ export default {
         nom: "",
         prenom: "",
         tel: "",
+        img_profile: "",
+      },
+      profile: {
+        img_profile: "",
       },
       defaultImageUrl2: require("../../../../../../../../socialv/socialV-main/socialV-main/bs5/code-vue/src/assets/images/user/user3.png"),
     };
@@ -301,25 +314,81 @@ export default {
       const file = event.target.files[0];
       this.selectedFile = file;
     },
-    uploadProfileImage() {
+    
+    handleFileInputChange(event) {
+      const file = event.target.files[0];
+      const fileType = file.type.split("/")[1];
+      if (!file) {
+        console.error("No file selected.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log("nourrr ", fileType);
+        const base64String =
+          `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
+        this.fileToUpload = base64String;
+        this.validateUpload();
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting file to base64:", error);
+      };
+    },
+    validateUpload() {
+      const token = localStorage.getItem("token");
+      this.userData.img_profile = this.fileToUpload;
+      console.log("base64: ", this.fileToUpload);
+      if (!this.fileToUpload) {
+        console.error("Aucun fichier sélectionné.");
+        return;
+      }
+
       const formData = new FormData();
-      formData.append("img_profile", this.selectedFile);
+      // formData.append("img_profile", this.fileToUpload);
+      this.profile.img_profile = this.fileToUpload;
       axios
-        .post("http://127.0.0.1:8000/api/imgProfile", formData), {headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },}
+        .put("http://127.0.0.1:8000/api/imgProfile", this.profile, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        })
         .then((response) => {
-          console.log(response.data);
-          alert("Image de profil mise à jour avec succès !");
+          //this.profile.img_profile = response.data.img_profile;
+          this.userData = response.data.user;
+          localStorage.setItem("userData", JSON.stringify(response.data.user));
+
+          // console.log("Upload successful. Message:", response.data);
         })
         .catch((error) => {
-          // Gérer les erreurs, par exemple, afficher un message d'erreur
-          console.error(error);
-          alert(
-            "Une erreur est survenue lors de la mise à jour de l'image de profil."
-          );
+          console.error("Erreur lors du téléchargement de l'image :", error);
         });
     },
+
+    // uploadProfileImage(event) {
+    //   const file = event.target.files[0];
+    //   const formData = new FormData();
+    //   formData.append("img_profile", file);
+
+    //   axios
+    //     .put("http://127.0.0.1:8000/api/imgProfile", formData, {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //         Authorization: `Bearer ${this.accessToken}`,
+    //       },
+    //     })
+    //     .then((response) => {
+    //       // Mettez à jour l'URL de l'image de profil dans userData
+    //       this.userData.img_profile = response.data.img_profile;
+    //       // Affichez un message de succès ou effectuez d'autres actions nécessaires
+    //       console.log(response.data.message);
+    //     })
+    //     .catch((error) => {
+    //       // Gérez les erreurs de téléchargement ici
+    //       console.error("Erreur lors du téléchargement de l'image :", error);
+    //     });
+    // },
   },
 };
 </script>

@@ -6,7 +6,7 @@
           <div class="col-md-6">
             <div class="image-block">
               <img
-                :src="defaultImageUrl"
+                :src="eventDetails.image ? eventDetails.image : defaultImageUrl"
                 class="img-fluid rounded w-100"
                 alt="blog-img"
               />
@@ -62,20 +62,23 @@
               <button
                 @click="editEvent(eventDetails.id)"
                 class="btn btn-sm btn-primary mr-2"
+                v-if="userData.role !== 'user'"
               >
                 Update
               </button>
               <button
                 @click="deleteEvent(eventDetails.id)"
                 class="btn btn-sm btn-danger mr-2"
+                v-if="userData.role !== 'user'"
               >
                 Delete
               </button>
               <button
                 @click="voirParticipants(eventDetails.id)"
                 class="btn btn-sm btn-info"
+                v-if="userData.role !== 'user'"
               >
-                Voir les participants
+              See participants
               </button>
             </div>
             <div class="col-md-6 d-flex justify-content-end">
@@ -96,12 +99,14 @@ import axios from "axios";
 export default {
   data() {
     return {
+      userData: JSON.parse(localStorage.getItem("userData") || "null"),
       eventDetails: null,
       defaultImageUrl: require("../../../assets/images/DefaultEvent.png"),
       participantsList: [],
     };
   },
   mounted() {
+    this.userData = JSON.parse(localStorage.getItem("userData") || "null");
     const eventId = this.$route.params.id;
     this.fetchEventDetails(eventId);
   },

@@ -37,7 +37,7 @@
         class="form-control"
       />
     </div>
-    <div class="form-group">
+    <!-- <div class="form-group">
       <label for="image">Image :</label>
       <input
         type="file"
@@ -45,7 +45,7 @@
         @change="handleFileChange"
         class="form-control"
       />
-    </div>
+    </div> -->
     <div class="form-group">
       <button @click="confirmEdit" class="btn btn-primary">Confirm</button>
       <button @click="goBack" class="btn btn-secondary">Back</button>
@@ -59,6 +59,8 @@ import axios from "axios";
 export default {
   data() {
     return {
+      userData: JSON.parse(localStorage.getItem("userData") || "null"),
+
       editedEvent: {
         id: "", // ID de l'événement à éditer
         description: "",
@@ -115,6 +117,8 @@ export default {
     },
   },
   mounted() {
+    this.userData = JSON.parse(localStorage.getItem("userData") || "null");
+
     // Récupérer l'ID de l'événement à éditer depuis les paramètres de l'URL
     const eventId = this.$route.params.id;
     this.editedEvent.id = eventId;

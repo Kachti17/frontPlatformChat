@@ -11,12 +11,18 @@
       <div class="row no-gutters">
         <div class="col-md-6 text-center pt-5">
           <div class="sign-in-detail text-white">
-            <a class="sign-in-logo mb-5" href="#"
-              ><img
-                src="@/assets/images/digitrendsBlue.jpg"
-                class="img-fluid enlarged-image"
-                alt="logo"
-            /></a>
+            <br />
+            <br />
+            <br />
+
+            <img
+              src="@/assets/images/digLogo.png"
+              class="img-fluid mb-4"
+              alt="logo"
+              width="200px"
+              height="200px"
+            />
+
             <!-- Slider et autres contenus -->
           </div>
         </div>
@@ -80,6 +86,9 @@
                   placeholder="Enter password"
                   required
                 />
+                <small v-if="password.length < 6" class="text-danger">
+                  The password must be at least 6 characters long.
+                </small>
               </div>
               <div class="form-group">
                 <label class="form-label" for="exampleInputPassword1"
@@ -91,8 +100,23 @@
                   class="form-control"
                   id="exampleInputPassword1"
                   placeholder="Enter phone number"
-
                 />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="exampleRole">Role *</label>
+                <select
+                  v-model="role"
+                  class="form-select"
+                  id="exampleRole"
+                  required
+                >
+                  <option value="" disabled selected hidden>
+                    Select a role
+                  </option>
+                  <option value="admin">Admin</option>
+                  <option value="back office">Back Office</option>
+                  <option value="user">User</option>
+                </select>
               </div>
               <div class="d-inline-block w-100">
                 <div class="form-check d-inline-block mt-2 pt-1">
@@ -140,6 +164,7 @@ export default {
       email: "",
       password: "",
       tel: "",
+      role: "",
       errorMessage: "",
       successMessage: "",
     };
@@ -156,7 +181,8 @@ export default {
             prenom: this.prenom,
             email: this.email,
             password: this.password,
-            tel: this.tel.trim() !== "" ? this.tel : null, // Vérifie si le numéro est vide, sinon envoie null
+            tel: this.tel.trim() !== "" ? this.tel : null,
+            role: this.role,
           }
         );
 

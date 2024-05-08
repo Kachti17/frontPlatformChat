@@ -22,9 +22,10 @@
           <div class="d-flex align-items-center">
             <div class="user-img">
               <img
-                src="@/assets/images/user/user3.png"
-                alt="userimg"
-                class="avatar-60 rounded-circle img-fluid"
+                :src="
+                  userData.img_profile ? userData.img_profile : defaultImageUrl2
+                "
+                alt="image de profil"
               />
             </div>
 
@@ -37,6 +38,21 @@
                 required
                 style="border: none"
               />
+
+              <img
+                v-if="contenu.image_path"
+                :src="contenu.image_path"
+                alt="Selected Image"
+                style="max-width: 70%; max-height: 70px; margin-top: 10px"
+              />
+              <button
+                v-if="contenu.image_path"
+                type="button"
+                class="btn btn-danger mt-2"
+                @click="effacerImage"
+              >
+                Effacer l'image
+              </button>
             </form>
           </div>
           <br />
@@ -44,19 +60,20 @@
 
           <ul class="post-opt-block d-flex list-inline m-0 p-0 flex-wrap">
             <li class="me-3 mb-md-0 mb-2">
-              <label for="input-photo" class="btn btn-soft-primary">
+              <label for="input-photo-social" class="btn btn-soft-primary">
                 <img
                   src="../../../../assets/images/small/07.png"
                   alt="icon"
                   class="img-fluid me-2"
                 />
-                Picture
+                Pictureeeee
                 <input
-                  id="input-photo"
+                  id="input-photo-social"
                   type="file"
                   ref="image_path"
                   style="display: none"
-                  @change="handleImageChange"
+                  class="form-control"
+                  @change="handleFileInputChange2"
                 />
               </label>
             </li>
@@ -105,7 +122,8 @@
           <button
             class="btn btn-primary d-block w-100 mt-3"
             type="button"
-            @click="modifierPublication()"
+            data-bs-dismiss="modal"
+            @click="modifierPublication(publicationId)"
           >
             Update
           </button>
@@ -116,9 +134,13 @@
 
   <div class="col-lg-12">
     <div class="d-flex justify-content-between mb-3">
-      <button @click="showApproved = true">Publications Approuvées</button>
-      <button @click="showApproved = false">Publications Non Approuvées</button>
-      <button @click="showApproved = null">
+      <button @click="showApproved = true" v-if="userData?.role !== 'user'">
+        Publications Approuvées
+      </button>
+      <button @click="showApproved = false" v-if="userData?.role !== 'user'">
+        Publications Non Approuvées
+      </button>
+      <button @click="showApproved = null" v-if="userData?.role !== 'user'">
         Publications En Attente de Modification
       </button>
     </div>
@@ -148,12 +170,12 @@
                       {{ post.user.nom }} {{ post.user.prenom }}
                     </h5>
                     <p class="mb-0 text-primary">
-                      {{ formatDateTime(post.contenu.created_at) }}
+                      {{ formatDateTime(post.contenu.updated_at) }}
                     </p>
                   </div>
 
                   <div
-                    v-if="!showApproved"
+                    v-if="!showApproved && userData?.role !== 'user'"
                     class="d-flex justify-content-between mt-3"
                   >
                     <button @click="accepterPublication(post.id)">
@@ -167,6 +189,7 @@
                   <div class="card-post-toolbar">
                     <div class="dropdown">
                       <span
+                        v-if="showApproved === true && post.isApproved === 1"
                         class="dropdown-toggle material-symbols-outlined"
                         data-bs-toggle="dropdown"
                         aria-haspopup="true"
@@ -177,6 +200,10 @@
                       </span>
                       <div class="dropdown-menu m-0 p-0">
                         <a
+                          v-if="
+                            post.user.id == userData.id ||
+                            userData.id == post.user_id
+                          "
                           class="dropdown-item p-3"
                           @click="UpdatePost(post)"
                           href="#"
@@ -200,7 +227,7 @@
                             id="post-modal-data"
                             body-class="iq-card iq-card-block iq-card-stretch iq-card-height"
                           >
-                            <modal
+                            <!-- <modal
                               id="newModal"
                               dialogClass="modal-fullscreen-sm-down  modal-margin"
                               tabindex="-1"
@@ -226,9 +253,12 @@
                                 <div class="d-flex align-items-center">
                                   <div class="user-img">
                                     <img
-                                      src="@/assets/images/user/1.jpg"
-                                      alt="userimg"
-                                      class="avatar-60 rounded-circle img-fluid"
+                                      :src="
+                                        userData.img_profile
+                                          ? userData.img_profile
+                                          : defaultImageUrl2
+                                      "
+                                      alt="image de profil"
                                     />
                                   </div>
 
@@ -244,6 +274,20 @@
                                       required
                                       style="border: none"
                                     />
+                                    <img
+                                      v-if="contenu.image_path"
+                                      :src="contenu.image_path"
+                                      alt="Selected Image"
+                                      style="max-width: 100%; margin-top: 10px"
+                                    />
+                                    <button
+                                      v-if="contenu.image_path"
+                                      type="button"
+                                      class="btn btn-danger mt-2"
+                                      @click="effacerImage"
+                                    >
+                                      Effacer l'image
+                                    </button>
                                   </form>
                                 </div>
                                 <br />
@@ -268,7 +312,8 @@
                                         type="file"
                                         ref="image_path"
                                         style="display: none"
-                                        @change="handleImageChange"
+                                        class="form-control"
+                                        @change="handleFileInputChange2"
                                       />
                                     </label>
                                   </li>
@@ -319,8 +364,15 @@
                                     />
                                   </div>
                                 </ul>
+                                <button
+                                  class="btn btn-primary d-block w-100 mt-3"
+                                  type="button"
+                                  @click="modifierPublication(post.id)"
+                                >
+                                  Update
+                                </button>
                               </model-body>
-                            </modal>
+                            </modal> -->
                           </iq-card>
                         </div>
                         <a
@@ -355,7 +407,13 @@
               </a>
             </template>
             <template v-if="post.contenu.image_path !== null">
-              <img :src="post.contenu.image_path" alt="Image du post" />
+              <div class="user-post">
+                <img
+                  :src="post.contenu.image_path"
+                  alt="Image du post"
+                  class="img-fluid rounded w-25"
+                />
+              </div>
             </template>
             <template v-if="post.contenu.video_path !== null">
               <div class="ratio ratio-16x9">
@@ -374,50 +432,21 @@
                 class="like-block position-relative d-flex align-items-center"
               >
                 <div class="d-flex align-items-center">
-                  {{ aReagi }}
                   <div class="like-data">
-                    <div class="dropdown" @click.stop="" v-if="aReagi">
-                      <span
-                        class="dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        role="button"
-                      >
-                        <img
-                          ref="reactionImage"
-                          :src="
-                            aReagi
-                              ? require('@/assets/images/icon/02.png')
-                              : require('@/assets/images/icon/01.png')
-                          "
-                          class="img-fluid"
-                          alt=""
-                          @click="handleReaction(post.id)"
-                        />
-                      </span>
-                    </div>
-                    <div class="dropdown" @click.stop="" v-else>
-                      <span
-                        class="dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        role="button"
-                      >
-                        <img
-                          ref="reactionImage"
-                          :src="
-                            aReagi
-                              ? require('@/assets/images/icon/02.png')
-                              : require('@/assets/images/icon/01.png')
-                          "
-                          class="img-fluid"
-                          alt=""
-                          @click="handleReaction(post.id)"
-                        />
-                      </span>
-                    </div>
+                    <img
+                      ref="reactionImage"
+                      :src="
+                        userReactionData[post.id] === true
+                          ? defaultImageUrl3
+                          : defaultImageUrl2
+                      "
+                      class="img-fluid"
+                      alt=""
+                      @click="
+                        handleReactionOrUnreact(post.id),
+                          checkUserReaction(post.id)
+                      "
+                    />
                   </div>
 
                   <div class="total-like-block ms-2 me-3">
@@ -434,47 +463,8 @@
                   </div>
                 </div>
 
-                <!-- <div class="d-flex align-items-center">
-                  <div class="like-data">
-                    <div class="dropdown">
-                      <span
-                        class="dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        role="button"
-                      >
-                        <img
-                          src="@/assets/images/icon/01.png"
-                          class="img-fluid"
-                          alt=""
-                        />
-                      </span>
-                    </div>
-                  </div>
-                  <div class="total-like-block ms-2 me-3">
-                    <div class="dropdown">
-                      <span
-                        class="dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        role="button"
-                      >
-                        {{ post.nbr_react }} Likes
-                      </span>
-                      <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Max Emum</a>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
                 <div class="total-comment-block">
                   <div class="dropdown">
-                    <!-- <a class="iq-icons-list" href="#"
-                      ><i class="las la-comment"></i
-                    ></a> -->
-
                     <span
                       data-bs-toggle=""
                       aria-haspopup="true"
@@ -489,12 +479,17 @@
             </div>
             <hr />
             <div class="total-comment-block">
-              <!-- <h3 class="mb-3">commentaires</h3> -->
               <div
-                v-for="commentaire in post.commentaires"
+                v-for="(commentaire, cIndex) in post.commentaires"
                 :key="commentaire.id"
+                ::key="cIndex"
               >
-                <template v-if="commentaire.pub_id === post.id">
+                <template
+                  v-if="
+                    commentaire.pub_id === post.id &&
+                    (cIndex < commentLimit || showAllComments)
+                  "
+                >
                   <div class="d-flex flex-wrap mt-3">
                     <div class="user-img">
                       <img
@@ -508,37 +503,41 @@
                       />
                     </div>
                     <div class="comment-data-block ms-3">
+                      <h5>
+                        <b
+                          >{{ commentaire.user.nom }}
+                          {{ commentaire.user.prenom }}</b
+                        >
+                      </h5>
+
+                      <h5 class="font-normal">
+                        {{ commentaire.contenu_comm }}
+                      </h5>
                       <div
-                        v-if="commentaire.user_id === userData.id"
-                        class="d-flex flex-wrap mt-3"
+                        class="d-flex flex-wrap align-items-center comment-activity"
                       >
+                        <span class="small-text">{{
+                          formatDateTime(commentaire.created_at)
+                        }}</span>
+                      </div>
+                      <div class="d-flex flex-wrap mt-3">
                         <button
+                          v-if="commentaire.user_id === userData.id"
                           @click="openEditModal(commentaire)"
                           class="btn btn-primary me-2"
                         >
                           Update
                         </button>
                         <button
+                          v-if="
+                            commentaire.user_id === userData.id ||
+                            userData.role === 'admin'
+                          "
                           @click="deleteComment(commentaire.id)"
                           class="btn btn-danger"
                         >
                           Delete
                         </button>
-                      </div>
-                      <h6>
-                        {{ commentaire.user.nom }}
-                        {{ commentaire.user.prenom }}
-                      </h6>
-
-                      <p class="mb-0">
-                        {{ commentaire.contenu_comm }}
-                      </p>
-                      <div
-                        class="d-flex flex-wrap align-items-center comment-activity"
-                      >
-                        <span>{{
-                          formatDateTime(commentaire.created_at)
-                        }}</span>
                       </div>
                     </div>
 
@@ -579,6 +578,7 @@
                   </div>
                 </template>
               </div>
+              <button @click="loadMoreComments">Load More Comments</button>
             </div>
 
             <form
@@ -589,7 +589,7 @@
                 type="text"
                 class="form-control rounded"
                 placeholder="Enter Your Comment"
-                v-model="nouveauCommentaire"
+                v-model="nouveauxCommentaires[post.id]"
               />
               <button type="submit" class="btn btn-primary mr-2">
                 Add comment
@@ -605,15 +605,25 @@
 <script>
 import axios from "axios";
 export default {
+  props: ["post"],
   data() {
     return {
+      showAllComments: false,
+      commentLimit: 2,
+      currentPage: 1, // Page actuelle
+      indexAffichage: 2,
+      displayedComments: [],
       //defaultImageUrl: require("../../../assets/images/user/user3.png"),
       defaultpic: require("@/assets/images/user/user3.png"),
+      defaultImageUrl2: require("../../../../assets/images/icon/01.png"),
+      defaultImageUrl3: require("../../../../assets/images/icon/02.png"),
+
+      userReactionData: {}, // Initialize as an empty object
       userLoggedInID: "",
       user: null,
       commentToEditId: null,
       showUpdateButton: false,
-      userData: null,
+      userData: JSON.parse(localStorage.getItem("userData") || "null"),
       commentaires: "",
       unapprovedPublications: [],
       approvedPublications: [],
@@ -633,12 +643,20 @@ export default {
         video_path: "",
         lien: "",
       },
-      nouveauCommentaire: "",
+      contenu2: {
+        id: "",
+        texte: "",
+        image_path: "",
+        video_path: "",
+        lien: "",
+      },
       aReagi: false,
       editedComment: "",
       commentToEdit: null,
       isEditModalOpen: false,
       commentId: null,
+      nouveauxCommentaires: {},
+      reactionsList: [],
     };
   },
   computed: {
@@ -657,15 +675,9 @@ export default {
     this.userData = JSON.parse(localStorage.getItem("userData") || "null");
     console.log(this.userData);
 
-    //this.loadUserDetails();
     this.loadUnapprovedPublications();
     this.loadApprovedPublications();
     this.loadWaitingForModificationPublications();
-    this.approvedPublications.forEach((post) => {
-      if (post.isApproved === 1) {
-        this.loadCommentaires(post.id);
-      }
-    });
   },
 
   methods: {
@@ -704,40 +716,6 @@ export default {
       }
     },
 
-    // async getUserReactionImage(pubId) {
-    //   try {
-    //     const response = await axios.get(
-    //       `http://127.0.0.1:8000/api/publication/${pubId}/userReacted`
-    //     );
-    //     const usersWhoReacted = response.data;
-    //     const userReacted = usersWhoReacted.some(
-    //       (user) => user.id === this.user.id
-    //     );
-
-    //     // Retourner l'URL de l'image appropriée en fonction de la réaction de l'utilisateur
-    //     return userReacted
-    //       ? require("@/assets/images/icon/x.png") // Utilisation de require pour charger l'image correctement
-    //       : require("@/assets/images/icon/y.png");
-    //   } catch (error) {
-    //     console.error(error);
-    //     // Afficher l'erreur pour le débogage
-    //   }
-    // },
-
-    async getUsersWhoReacted(pubId) {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/publication/${pubId}/userReacted`
-        );
-        const test = response.data;
-
-        return response.data;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
-    },
-
     loadApprovedPublications() {
       axios
         .get("http://127.0.0.1:8000/api/publicationApprouvée")
@@ -745,21 +723,13 @@ export default {
           this.approvedPublications = response.data;
           console.log(response.data);
 
-          // bch nrecuperi beha el user logged in
-          //await this.loadUserDetails();
-          // if (this.user !== null) {
-          //   const userLoggedInID = this.user.id;
+          for (const publication of this.approvedPublications) {
+            console.log("fefe", this.publication);
 
-          for (const post of this.approvedPublications) {
-            if (post.isApproved === 1) {
-              await this.loadCommentaires(post.id);
-              // const usersWhoReacted = await this.getUsersWhoReacted(post.id);
-              // console.log("Utilisateurs qui ont réagi :", usersWhoReacted);
-
-              // juste ntesti bch nchouf est ce que ya9ra el user logged in fel liste wela le
-              // if (usersWhoReacted.includes(userLoggedInID)) {
-              //   console.log("Je suis présent dans la liste des réactions.");
-              // }
+            if (publication.isApproved === 1) {
+              await this.loadCommentaires(publication.id, 2);
+              // console.log("gege", this.loadCommentaires);
+              this.checkUserReaction(publication.id);
             }
           }
         })
@@ -771,13 +741,17 @@ export default {
         });
     },
 
-    // hasReaction(pubId) {
-    //   return this.reactions.some(
-    //     (reaction) =>
-    //       reaction.pub_id === pubId && reaction.user_id === this.loggedInUserId
-    //   );
-    // },
+    async getImageUrl(post) {
+      const userReacted = await this.checkUserReaction(post.id);
+      console.log("Résultat de checkUserReaction :", userReacted);
 
+      // Vérifier si l'utilisateur a réagi au post
+      if (userReacted) {
+        return require("@/assets/images/icon/02.png"); // Utilisateur a réagi, afficher image 02.png
+      } else {
+        return require("@/assets/images/icon/01.png"); // Utilisateur n'a pas réagi, afficher image 01.png
+      }
+    },
     async checkUserReaction(pubId) {
       try {
         const token = localStorage.getItem("token");
@@ -789,23 +763,26 @@ export default {
             },
           }
         );
-        this.aReagi = response.data;
-        console.log("rrrrr", response.data);
 
-        console.log("rrrrr", this.aReagi);
-        return this.aReagi;
+        // console.log(
+        //   "Réaction de l'utilisateur pour la publication",
+        //   pubId,
+        //   ":",
+        //   response.data
+        // );
+        this.userReactionData[pubId] = response.data;
+        // console.log("ekhdem", pubId, ":", this.userReactionData);
+        return this.userReactionData;
       } catch (error) {
         console.error(error);
         return false;
       }
     },
-
-    async handleReaction(pubId) {
-      console.log(pubId);
+    async handleReactionOrUnreact(pubId) {
       try {
         const token = localStorage.getItem("token");
         await axios.post(
-          `http://127.0.0.1:8000/api/publication/${pubId}/react`,
+          `http://127.0.0.1:8000/api/publication/${pubId}/react-or-unreact`,
           null,
           {
             headers: {
@@ -815,27 +792,6 @@ export default {
         );
 
         this.loadApprovedPublications();
-        // const aReagi = await this.checkUserReaction(pubId);
-        // console.log("reaaacttttt", "L'utilisateur a réagi au post ?", aReagi);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async unreact(pubId) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.post(
-          `http://127.0.0.1:8000/api/publication/${pubId}/unreact`,
-          null,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        this.loadApprovedPublications();
-        // const aReagi = await this.checkUserReaction(pubId);
-        // console.log("L'utilisateur a dés-réagi au post ?", !aReagi);
       } catch (error) {
         console.error(error);
       }
@@ -865,7 +821,7 @@ export default {
     },
 
     ajouterCommentaire(publicationId) {
-      const contenuComm = this.nouveauCommentaire.trim();
+      const contenuComm = this.nouveauxCommentaires[publicationId];
 
       if (contenuComm) {
         const token = localStorage.getItem("token");
@@ -884,7 +840,7 @@ export default {
           )
           .then((response) => {
             console.log(response.data);
-            this.nouveauCommentaire = "";
+            this.nouveauxCommentaires[publicationId] = "";
             this.loadApprovedPublications();
           })
           .catch((error) => {
@@ -912,13 +868,22 @@ export default {
           );
         });
     },
+    loadMoreComments() {
+      this.commentLimit += 2;
+      this.loadApprovedPublications();
+    },
 
-    loadCommentaires(publicationId) {
+    loadCommentaires(postId, nombreCommentaires) {
       axios
-        .get(`http://127.0.0.1:8000/api/commentaires/${publicationId}`)
+        .get(`http://127.0.0.1:8000/api/commentaires/${postId}`, {
+          params: {
+            nombreCommentaires: nombreCommentaires,
+          },
+        })
         .then((response) => {
-          console.log("fgg", response.data);
-          this.commentaires = response.data;
+          this.commentaires = response.data.commentaires;
+          console.log("Commentaires chargés :", this.commentaires); // Vérification des données chargées
+          console.log("gegeg", postId);
         })
         .catch((error) => {
           console.error(error);
@@ -928,30 +893,105 @@ export default {
         });
     },
 
+    // loadCommentaires(publicationId, page = 1) {
+    //   axios
+    //     .get(
+    //       `http://127.0.0.1:8000/api/commentaires/${publicationId}?page=${page}`
+    //     )
+    //     .then((response) => {
+    //       // console.log("fgg", response.data);
+    //       this.commentaires = response.data.commentaires.data;
+    //       this.currentPage = response.data.commentaires.current_page;
+    //       this.lastPage = response.data.commentaires.last_page;
+    //       console.log(
+    //         "hehehehe",
+    //         response.data.commentaires.last_page,
+    //         response.data.commentaires.current_page
+    //       );
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //       alert(
+    //         "Erreur lors du chargement des commentaires. Veuillez réessayer plus tard."
+    //       );
+    //     });
+    // },
+
+    validateUpload() {
+      const token = localStorage.getItem("token");
+      this.contenu.image_path = this.fileToUpload;
+      console.log("base64: ", this.fileToUpload);
+      if (!this.fileToUpload) {
+        console.error("Aucun fichier sélectionné.");
+        return;
+      }
+    },
+    handleFileInputChange2(event) {
+      const file = event.target.files[0];
+      const fileType = file.type.split("/")[1];
+      if (!file) {
+        console.error("No file selected.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log("test oussema ");
+
+        console.log("nourrr ", fileType);
+        const base64String =
+          `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
+        // this.fileToUpload = base64String;
+        this.contenu.image_path = base64String;
+        console.log("oussema ", this.contenu.image_path);
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting file to base64:", error);
+      };
+    },
+
     modifierPublication(publicationId) {
       const token = localStorage.getItem("token");
 
       const headers = { Authorization: `Bearer ${token}` };
+      if (this.contenu.image_path && this.fileToUpload) {
+        this.contenu.image_path = this.fileToUpload;
+      } else if (!this.contenu.image_path) {
+        this.effacerImage();
+      }
 
+      console.log("tswr:", this.contenu.image_path);
       axios
         .put(
           `http://127.0.0.1:8000/api/modifierPublication/${this.publication.id}`,
           this.contenu,
           { headers }
         )
+        .then((response) => {
+          console.log("Publication updated:", response.data);
+          this.loadApprovedPublications();
+          this.loadWaitingForModificationPublications();
+        })
+
         .catch((error) => {
           console.error(
             "Erreur lors de la modification de la publication:",
             error.response.data.error
           );
         });
-      window.location.reload();
+
+      // window.location.reload();
     },
     UpdatePost(item) {
       this.publication = item;
       this.contenu = item.contenu;
       this.showLinkInput = true;
     },
+    effacerImage() {
+      this.contenu.image_path = null; // ou null
+    },
+
     accepterPublication(publicationId) {
       axios
         .post(`http://127.0.0.1:8000/api/publication/accepter/${publicationId}`)
@@ -1091,5 +1131,8 @@ export default {
 }
 .modal-margin {
   margin: 100px !important; /* Exemple de style pour les posts non approuvés */
+}
+.small-text {
+  font-size: 0.85em; /* Exemple de taille de police plus petite */
 }
 </style>
