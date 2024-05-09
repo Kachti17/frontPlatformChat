@@ -43,7 +43,7 @@
               Picture</a
             >
           </li>
-          <li class="me-3 mb-md-0 mb-2">
+          <!-- <li class="me-3 mb-md-0 mb-2">
             <a href="#" class="btn btn-soft-primary"
               ><img
                 src="../../../../assets/images/small/08.png"
@@ -52,7 +52,7 @@
               />
               Video</a
             >
-          </li>
+          </li> -->
           <li class="me-3 mb-md-0 mb-2">
             <a
               href="#"
@@ -136,7 +136,7 @@
               </label>
             </li>
 
-            <li class="me-3 mb-md-0 mb-2">
+            <!-- <li class="me-3 mb-md-0 mb-2">
               <label for="input-video" class="btn btn-soft-primary">
                 <img
                   src="../../../../assets/images/small/08.png"
@@ -152,7 +152,7 @@
                   @change="handleVideoChange"
                 />
               </label>
-            </li>
+            </li> -->
 
             <li class="me-3 mb-md-0 mb-2">
               <a

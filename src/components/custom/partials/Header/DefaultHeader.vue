@@ -75,14 +75,14 @@
             data-bs-toggle="modal"
             data-bs-target="#exampleModalFullscreenSm"
           >
-            <a class="search-link d-none d-lg-block" href="javascript:void(0);">
+            <!-- <a class="search-link d-none d-lg-block" href="javascript:void(0);">
               <span class="material-symbols-outlined">search</span>
             </a>
             <input
               type="text"
               class="text search-input form-control bg-soft-primary d-none d-lg-block"
               placeholder="Search here..."
-            />
+            /> -->
             <a
               class="d-lg-none d-flex"
               href="javascript:void(0);"
@@ -144,7 +144,7 @@
           </div>
           <div class="offcanvas-body pt-0">
             <ul class="navbar-nav ms-auto navbar-list">
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <router-link
                   :to="{ name: 'social.list' }"
                   class="d-flex align-items-center"
@@ -152,9 +152,9 @@
                   <i class="material-symbols-outlined">home</i>
                   <span class="mobile-text d-lg-none ms-3">Home</span>
                 </router-link>
-              </li>
+              </li> -->
 
-              <li class="nav-item dropdown d-none d-lg-block">
+              <!-- <li class="nav-item dropdown d-none d-lg-block">
                 <a
                   href="javascript:void(0);"
                   class="search-toggle dropdown-toggle d-flex align-items-center"
@@ -273,7 +273,7 @@
                   <i class="material-symbols-outlined">mail</i>
                   <span class="mobile-text ms-3">Message</span>
                 </router-link>
-              </li>
+              </li> -->
               <li class="nav-item dropdown d-none d-lg-block">
                 <a
                   href="javascript:void(0);"
@@ -417,7 +417,7 @@ export default {
       if (sidebarType.value.includes("sidebar-mini")) {
         store.dispatch(
           "setting/sidebar_type",
-          sidebarType.value.filter((item) => item !== "sidebar-mini")
+          sidebarType.value.filter((item) => item !== "sidebar-mini"),
         );
       } else {
         store.dispatch("setting/sidebar_type", [

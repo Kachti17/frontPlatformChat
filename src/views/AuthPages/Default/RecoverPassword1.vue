@@ -13,7 +13,7 @@
           <div class="sign-in-detail text-white">
             <a class="sign-in-logo mb-5" href="#">
               <img
-                src="@/assets/images/digitrendsBlue.jpg"
+                src="@/assets/images/digLogo.png"
                 class="img-fluid enlarged-image"
                 alt="logo"
               />
@@ -22,24 +22,27 @@
         </div>
         <div class="col-md-6 bg-white pt-5 pb-lg-0 pb-5">
           <div class="sign-in-from">
-            <h1 class="mb-0">Réinitialiser le mot de passe</h1>
+            <h1 class="mb-0">Reset password</h1>
             <p>
-              Entrez votre adresse e-mail et nous vous enverrons un e-mail avec des instructions pour réinitialiser votre mot de passe.
+              Enter your e-mail address and we'll send you an e-mail with new
+              password.
             </p>
             <form class="mt-4" @submit.prevent="onSubmit">
               <div class="form-group">
-                <label class="form-label" for="exampleInputEmail1">Adresse e-mail</label>
+                <label class="form-label" for="exampleInputEmail1"
+                  >E-mail address
+                </label>
                 <input
                   type="email"
                   class="form-control mb-0"
                   id="exampleInputEmail1"
-                  placeholder="Entrez votre e-mail"
+                  placeholder="Enter your e-mail"
                   v-model="email"
                 />
               </div>
               <div class="d-inline-block w-100">
                 <button type="submit" class="btn btn-primary float-right">
-                  Réinitialiser le mot de passe
+                  Reset password
                 </button>
               </div>
             </form>
@@ -70,7 +73,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         )
         .then((response) => {
           console.log(response.data.message);

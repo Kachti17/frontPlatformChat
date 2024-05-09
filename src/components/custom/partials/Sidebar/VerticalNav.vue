@@ -9,8 +9,7 @@
           data-bs-toggle="tooltip"
           title="Social"
           data-bs-placement="right"
-          ></span
-        >
+        ></span>
       </a>
     </li>
     <li class="nav-item">
@@ -120,10 +119,18 @@
         "
         :to="{ name: 'auth1.recoverpassword1' }"
       >
-        <i class="icon material-symbols-outlined filled">
-          fiber_manual_record
-        </i>
-        <span class="item-name">Recover Password</span>
+        <div class="d-inline-flex align-items-center">
+          <img
+            src="@/assets/images/pswrd.png"
+            class="img-fluid mb-4"
+            alt="logo"
+            width="24px"
+            height="25px"
+          />
+          <span class="item-name" style="margin-top: -25px"
+            >Recover Password</span
+          >
+        </div>
       </router-link>
     </li>
     <!-- <li class="nav-item">
@@ -385,7 +392,7 @@
             </li>
         </ul>
     </li> -->
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a
         v-if="userData?.role == 'admin'"
         class="nav-link"
@@ -403,8 +410,8 @@
         class="sub-nav collapse"
         id="sidebar-auth"
         data-bs-parent="#sidebar-menu"
-      >
-        <li class="nav-item">
+      > -->
+    <!-- <li class="nav-item">
           <router-link
             :class="
               checkActive('auth1.sign-in1') ? 'active nav-link' : 'nav-link'
@@ -416,22 +423,19 @@
             </i>
             <span class="item-name">Login</span>
           </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            :class="
-              checkActive('auth1.sign-up1') ? 'active nav-link' : 'nav-link'
-            "
-            :to="{ name: 'auth1.sign-up1' }"
-          >
-            <i class="icon material-symbols-outlined filled">
-              fiber_manual_record
-            </i>
-            <span class="item-name">Register</span>
-          </router-link>
-        </li>
+        </li> -->
+    <li class="nav-item" v-if="userData?.role == 'admin'">
+      <router-link
+        :class="checkActive('auth1.sign-up1') ? 'active nav-link' : 'nav-link'"
+        :to="{ name: 'auth1.sign-up1' }"
+      >
+        <i class="icon material-symbols-outlined"> library_books </i>
 
-        <!-- <li class="nav-item">
+        <span class="item-name">Register</span>
+      </router-link>
+    </li>
+
+    <!-- <li class="nav-item">
           <router-link
             :class="
               checkActive('auth1.confirmmail1') ? 'active nav-link' : 'nav-link'
@@ -444,7 +448,7 @@
             <span class="item-name">Confirm Mail</span>
           </router-link>
         </li> -->
-        <!-- <li class="nav-item">
+    <!-- <li class="nav-item">
           <router-link
             :class="
               checkActive('auth1.lockscreen1') ? 'active nav-link' : 'nav-link'
@@ -457,8 +461,8 @@
             <span class="item-name">Lock Screen</span>
           </router-link>
         </li> -->
-      </ul>
-    </li>
+    <!-- </ul>
+    </li> -->
     <!-- <li class="nav-item">
         <a :class="checkActive(utilities) ? 'active nav-link' : 'nav-link'" data-bs-toggle="collapse" href="#utilities-error" role="button" :aria-expanded="checkActive(utilities) "
             aria-controls="utilities-error">
