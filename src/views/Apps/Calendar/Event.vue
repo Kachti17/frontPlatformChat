@@ -78,7 +78,7 @@
                 class="btn btn-sm btn-info"
                 v-if="userData.role !== 'user'"
               >
-              See participants
+                See participants
               </button>
             </div>
             <div class="col-md-6 d-flex justify-content-end">
@@ -121,16 +121,13 @@ export default {
     async fetchEventDetails(id) {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/events/${id}`
+          `http://127.0.0.1:8000/api/events/${id}`,
         );
         this.eventDetails = response.data;
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des détails de l'événement :",
-          error
-        );
+        console.error("Error retrieving event details :", error);
         alert(
-          "Une erreur s'est produite lors de la récupération des détails de l'événement."
+          "Une erreur s'est produite lors de la récupération des détails de l'événement.",
         );
       }
     },
@@ -158,18 +155,18 @@ export default {
     async deleteEvent(id) {
       try {
         const confirmed = window.confirm(
-          "Êtes-vous sûr de vouloir supprimer cet événement ?"
+          "Are you sure you want to cancel this event?",
         );
         if (!confirmed) {
           return;
         }
         await axios.delete(`http://127.0.0.1:8000/api/DeleteEvent/${id}`);
-        alert("L'événement a été supprimé avec succès.");
+        alert("The event has been successfully deleted.");
         this.goBack();
       } catch (error) {
         console.error("Erreur lors de la suppression de l'événement :", error);
         alert(
-          "Une erreur s'est produite lors de la suppression de l'événement."
+          "Une erreur s'est produite lors de la suppression de l'événement.",
         );
       }
     },
@@ -193,7 +190,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         // Afficher le message de succès
@@ -223,7 +220,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         // Afficher le message de succès
@@ -233,7 +230,7 @@ export default {
       } catch (error) {
         console.error(
           "Erreur lors de l'annulation de la participation à l'événement :",
-          error
+          error,
         );
         // Afficher le message d'erreur
         alert("Erreur lors de l'annulation de la participation à l'événement.");

@@ -14,19 +14,8 @@
             <br />
             <br />
             <br />
-            <!-- <a class="sign-in-logo mb-5" href="#"><img src="@/assets/images/logo-full.png" class="img-fluid" alt="logo"></a> -->
-            <!-- Swiper pour le carrousel d'images -->
+
             <Swiper :options="options">
-              <!-- <SwiperSlide class="item">
-                <img src="@/assets/images/digiRam.jpg" class="img-fluid mb-4" alt="logo" width="200px" height="200px">
-                <h4 class="mb-1 text-white">Gérez vos commandes</h4>
-                <p>Il est établi de longue date qu'un lecteur sera distrait par le contenu lisible.</p>
-              </SwiperSlide>
-              <SwiperSlide class="item">
-                <img src="@/assets/images/digitrendsBur.jpg" class="img-fluid mb-4" alt="logo" width="200px" height="200px">
-                <h4 class="mb-1 text-white">Gérez vos commandes</h4>
-                <p>Il est établi de longue date qu'un lecteur sera distrait par le contenu lisible.</p>
-              </SwiperSlide> -->
               <SwiperSlide class="item text-start">
                 <img
                   src="@/assets/images/digLogo.png"
@@ -45,6 +34,7 @@
             <p>
               Enter your e-mail address and password to access the platform.
             </p>
+            <p v-if="error" class="text-danger">{{ error }}</p>
             <form class="mt-4" @submit.prevent="onSubmit">
               <div class="form-group">
                 <label class="form-label" for="exampleInputEmail1"
@@ -117,9 +107,16 @@ export default {
           return this.loadUserDetails();
         })
         .catch((error) => {
-          this.error = error.response.data.message;
+          if (error.response && error.response.status === 401) {
+            this.error =
+              "Invalid credentials. Please check your email and password.";
+          } else {
+            this.error =
+              "An error occurred while logging in. Please try again later.";
+          }
         });
     },
+
     loadUserDetails() {
       const userData = JSON.parse(localStorage.getItem("userData") || "null");
 

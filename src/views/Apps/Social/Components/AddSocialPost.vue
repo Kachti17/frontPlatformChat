@@ -59,7 +59,7 @@
               class="btn btn-soft-primary"
               @click.prevent="showLinkInput = !showLinkInput"
               ><img
-                src="../../../../assets/images/small/09.png"
+                src="../../../../assets/images/icon/link.png"
                 alt="icon"
                 class="img-fluid me-2"
               />
@@ -127,7 +127,7 @@
                 />
                 Picture
                 <input
-                id="input-photo"
+                  id="input-photo"
                   type="file"
                   ref="image_path"
                   style="display: none"
@@ -160,7 +160,7 @@
                 class="btn btn-soft-primary"
                 @click.prevent="showLinkInput = !showLinkInput"
                 ><img
-                  src="../../../../assets/images/small/09.png"
+                  src="../../../../assets/images/icon/link.png"
                   alt="icon"
                   class="img-fluid me-2"
                 />
@@ -252,12 +252,7 @@ export default {
         const token = localStorage.getItem("token");
         console.log("base64: ", this.fileToUpload);
 
-        if (
-          !this.texte &&
-          !this.fileToUpload &&
-          !this.$refs.video_path.files[0] &&
-          !this.lien
-        ) {
+        if (!this.texte && !this.fileToUpload && !this.lien) {
           this.message =
             "Please enter at least one field (text, photo, video, link)";
           return;
@@ -266,14 +261,14 @@ export default {
         let formData = new FormData();
         formData.append("texte", this.texte);
         formData.append("image_path", this.fileToUpload);
-        formData.append("video_path", this.$refs.video_path.files[0]);
+        // formData.append("video_path", this.$refs.video_path.files[0]);
         formData.append("lien", this.lien);
         const response = await axios.post(
           "http://127.0.0.1:8000/api/creerPublication",
           {
             texte: this.texte,
             image_path: this.fileToUpload,
-            video_path: this.$refs.video_path.files[0],
+            // video_path: this.$refs.video_path.files[0],
             lien: this.lien,
           },
           {
@@ -281,7 +276,7 @@ export default {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         window.location.reload();
 

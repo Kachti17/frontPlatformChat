@@ -88,7 +88,9 @@
           aria-hidden="true"
         >
           <model-header class="mt-5">
-            <h5 class="modal-title" id="modalcalLabel">Add event</h5>
+            <h5 class="modal-title" id="modalcalLabel">
+              <br /><strong>Add event</strong>
+            </h5>
             <button
               :dismissable="true"
               type="button"
@@ -292,28 +294,7 @@ const account = ref({
   },
 });
 
-const events = ref([
-  {
-    title: "Click for Google",
-    url: "http://google.com/",
-    start:
-      moment(new Date(), "YYYY-MM-DD").add(-20, "days").format("YYYY-MM-DD") +
-      "T05:30:00.000Z",
-    backgroundColor: "rgba(58,87,232,0.2)",
-    textColor: "rgba(58,87,232,1)",
-    borderColor: "rgba(58,87,232,1)",
-  },
-  {
-    title: "Click for Google",
-    url: "http://google.com/",
-    start:
-      moment(new Date(), "YYYY-MM-DD").add(0, "days").format("YYYY-MM-DD") +
-      "T06:30:00.000Z",
-    backgroundColor: "rgba(58,87,232,0.2)",
-    textColor: "rgba(58,87,232,1)",
-    borderColor: "rgba(58,87,232,1)",
-  },
-]);
+const events = ref([]);
 </script>
 
 <script>
@@ -350,7 +331,6 @@ export default {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        console.log("nourrr ", fileType);
         const base64String =
           `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
         this.fileToUpload = base64String;
@@ -363,23 +343,22 @@ export default {
       const errors = this.validateInput();
       if (Object.keys(errors).length > 0) {
         this.errors = errors;
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      const selectedDate = new Date(this.date_event);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Définir l'heure à 00:00:00 pour la comparaison
+
+      if (selectedDate < today) {
+        alert("The event date must be later than the current date.");
         return;
       }
 
       try {
         const token = localStorage.getItem("token");
-        console.log("Données du formulaire :", {
-          description: this.description,
-          lieu_event: this.lieu_event,
-          nbr_max: this.nbr_max,
-          date_event: this.date_event,
-          image: this.fileToUpload,
-        });
-        console.log("base64: ", this.fileToUpload);
-        if (!this.fileToUpload) {
-          console.error("Aucun fichier sélectionné.");
-          return;
-        }
+
         const formData = new FormData();
         formData.append("lieu_event", this.lieu_event);
         formData.append("date_event", this.date_event);
@@ -389,18 +368,13 @@ export default {
 
         const response = await axios.post(
           "http://127.0.0.1:8000/api/creerEvent",
-          {
-            description: this.description,
-            lieu_event: this.lieu_event,
-            nbr_max: this.nbr_max,
-            date_event: this.date_event,
-            image: this.fileToUpload,
-          },
+          formData,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
 
         const responseData = response.data;
@@ -483,7 +457,7 @@ export default {
     async showEventDetails(id) {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/events/${id}`
+          `http://127.0.0.1:8000/api/events/${id}`,
         );
         const eventData = response.data;
 
@@ -491,10 +465,10 @@ export default {
       } catch (error) {
         console.error(
           "Erreur lors de la récupération des détails de l'événement :",
-          error
+          error,
         );
         alert(
-          "Une erreur s'est produite lors de la récupération des détails de l'événement."
+          "Une erreur s'est produite lors de la récupération des détails de l'événement.",
         );
       }
     },
@@ -505,7 +479,7 @@ export default {
       try {
         // Afficher une boîte de dialogue de confirmation avant la suppression
         const confirmed = window.confirm(
-          "Êtes-vous sûr de vouloir supprimer cet événement ?"
+          "Êtes-vous sûr de vouloir supprimer cet événement ?",
         );
         if (!confirmed) {
           return; // Annuler la suppression si l'utilisateur a annulé la confirmation
@@ -518,14 +492,14 @@ export default {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (!response.ok) {
           throw new Error("Échec de la suppression de l'événement");
         }
         // Supprimer l'événement de la liste dans Vue.js
         const indexToDelete = this.eventsList.findIndex(
-          (event) => event.id === id
+          (event) => event.id === id,
         );
         if (indexToDelete !== -1) {
           this.eventsList.splice(indexToDelete, 1);

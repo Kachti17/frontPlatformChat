@@ -1,21 +1,22 @@
 <template>
-  <div class="relative h-10 m-1">
-    <div style="border-top: 1px solid #e6e6e6" class="grid grid-cols-6">
-      <input
-        type="text"
-        v-model="corps"
-        @keyup.enter="sendMessage()"
-        placeholder="Say something.."
-        class="col-span-5 outline-none p-2"
-      />
-      <button
-        @click="sendMessage()"
-        class="place-self-end bg-gray-500 hover:bg-blue-700 p-1 mt-1 rounded text-white"
-      >
+  
+
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          class="form-control"
+          v-model="corps"
+          @keyup.enter="sendMessage()"
+          placeholder="Say something.."
+        />
+        <div class="input-group-append">
+          <button @click="sendMessage()" type="button" class="btn btn-primary">
         Send
       </button>
-    </div>
-  </div>
+        </div>
+      </div>
+
+
 </template>
 
 <script>
@@ -53,21 +54,43 @@ export default {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         )
         .then((response) => {
-          console.log("khdem ama lezm itadaaa");
-          console.log("heheh", this.response.status);
+          // this.getMessages();
+          console.log("heheh", response);
 
-          if (response.status == 201) {
-            this.coprs = "";
-            this.$emit("message sent");
-          }
+          this.corps = "";
+          this.$emit("message sent");
         })
         .catch((error) => {
           console.log(error);
         });
     },
+    // getMessages() {
+    //   const token = localStorage.getItem("token");
+
+    //   axios
+    //     .get(
+    //       "http://127.0.0.1:8000/api/chat/room/" +
+    //         this.currentRoom.id +
+    //         "/messages",
+    //       {
+    //         headers: {
+    //           "Content-Type": "multipart/form-data",
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       },
+    //     )
+
+    //     .then((response) => {
+    //       this.messages = response.data;
+    //       console.log("current room:", this.currentRoom.id, response.data);
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // },
   },
 };
 </script>

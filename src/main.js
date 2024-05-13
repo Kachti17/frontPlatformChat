@@ -9,11 +9,32 @@ import VueApexCharts from 'vue3-apexcharts'
 import BootstrapVue3 from 'bootstrap-vue-3'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import 'leaflet/dist/leaflet.css'
+// import Pusher from 'pusher-js';
+
+// const pusher = new Pusher('12538d00cd9f62a899b9', {
+//     broadcaster: "pusher",
+//     key: "12538d00cd9f62a899b9",
+//     cluster: "us2",
+//     forceTLS: true,
+// });
+// import Echo from 'laravel-echo';
+// import Pusher from 'pusher-js';
+
+// window.Pusher = require("pusher-js");
+
+// window.Echo = new Echo({
+//   broadcaster: "pusher",
+//   key: "12538d00cd9f62a899b9",
+//   cluster: "us2",
+//   forceTLS: true,
+// });
+
 
 const app = createApp(App)
 app.use(VueSweetalert2)
 app.use(BootstrapVue3)
 app.use(VueApexCharts)
+// app.use(pusher);
 app.use(store).use(router).mount('#app')
 app.mixin({
   data () {

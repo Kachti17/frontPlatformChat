@@ -71,8 +71,8 @@
                     <td class="password-cell">{{ user.password }}</td>
                     <td>{{ user.tel }}</td>
                     <td>{{ user.role }}</td>
-                    <td>{{ user.created_at }}</td>
-                    <td>{{ user.updated_at }}</td>
+                    <td>{{ formatDate(user.created_at) }}</td>
+                    <td>{{ formatDate(user.updated_at) }}</td>
                     <td>
                       <button
                         type="button"
@@ -104,6 +104,18 @@ export default {
     };
   },
   methods: {
+    formatDate(isoDate) {
+      const options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: "UTC",
+      };
+      return new Date(isoDate).toLocaleString("en-GB", options);
+    },
     async showAllUsers() {
       try {
         const response = await fetch("http://127.0.0.1:8000/api/users");
@@ -134,7 +146,7 @@ export default {
           `http://127.0.0.1:8000/api/DeleteUser/${this.deleteUserId}`,
           {
             method: "DELETE",
-          }
+          },
         );
         if (!response.ok) {
           throw new Error("Failed to delete user");
@@ -152,7 +164,7 @@ export default {
     async searchUsers() {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/users?keyword=${this.searchText}`
+          `http://127.0.0.1:8000/api/users?keyword=${this.searchText}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch users");
@@ -170,7 +182,7 @@ export default {
       return this.users.filter(
         (user) =>
           user.nom.toLowerCase().includes(this.searchText.toLowerCase()) ||
-          user.prenom.toLowerCase().includes(this.searchText.toLowerCase())
+          user.prenom.toLowerCase().includes(this.searchText.toLowerCase()),
       );
     },
   },

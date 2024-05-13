@@ -102,7 +102,7 @@
                 class="btn btn-soft-primary"
                 @click.prevent="showLinkInput = !showLinkInput"
                 ><img
-                  src="../../../../assets/images/small/09.png"
+                src="../../../../assets/images/icon/link.png"
                   alt="icon"
                   class="img-fluid me-2"
                 />

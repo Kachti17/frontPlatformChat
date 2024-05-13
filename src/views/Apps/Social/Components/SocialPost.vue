@@ -26,6 +26,7 @@
                   userData.img_profile ? userData.img_profile : defaultImageUrl2
                 "
                 alt="image de profil"
+                class="avatar-30 img-fluid"
               />
             </div>
 
@@ -79,30 +80,12 @@
             </li>
 
             <li class="me-3 mb-md-0 mb-2">
-              <label for="input-video" class="btn btn-soft-primary">
-                <img
-                  src="../../../../assets/images/small/08.png"
-                  alt="icon"
-                  class="img-fluid me-2"
-                />
-                Video
-                <input
-                  id="input-video"
-                  type="file"
-                  ref="video_path"
-                  style="display: none"
-                  @change="handleVideoChange"
-                />
-              </label>
-            </li>
-
-            <li class="me-3 mb-md-0 mb-2">
               <a
                 href="#"
                 class="btn btn-soft-primary"
                 @click.prevent="showLinkInput = !showLinkInput"
                 ><img
-                  src="../../../../assets/images/small/09.png"
+                  src="../../../../assets/images/icon/link.png"
                   alt="icon"
                   class="img-fluid me-2"
                 />
@@ -134,14 +117,26 @@
 
   <div class="col-lg-12">
     <div class="d-flex justify-content-between mb-3">
-      <button @click="showApproved = true" v-if="userData?.role !== 'user'">
-        Publications Approuvées
+      <button
+        class="btn btn-dark"
+        @click="showApproved = true"
+        v-if="userData?.role !== 'user'"
+      >
+        Approved Publications
       </button>
-      <button @click="showApproved = false" v-if="userData?.role !== 'user'">
-        Publications Non Approuvées
+      <button
+        class="btn btn-dark"
+        @click="showApproved = false"
+        v-if="userData?.role !== 'user'"
+      >
+        Unapproved publications
       </button>
-      <button @click="showApproved = null" v-if="userData?.role !== 'user'">
-        Publications En Attente de Modification
+      <button
+        class="btn btn-dark"
+        @click="showApproved = null"
+        v-if="userData?.role !== 'user'"
+      >
+        Publications Awaiting Update
       </button>
     </div>
 
@@ -186,7 +181,12 @@
                     </button>
                   </div>
 
-                  <div class="card-post-toolbar">
+                  <div
+                    class="card-post-toolbar"
+                    v-if="
+                      post.user_id === userData.id || userData.role === 'admin'
+                    "
+                  >
                     <div class="dropdown">
                       <span
                         v-if="showApproved === true && post.isApproved === 1"
@@ -376,6 +376,10 @@
                           </iq-card>
                         </div>
                         <a
+                          v-if="
+                            post.user_id === userData.id ||
+                            userData.role === 'admin'
+                          "
                           class="dropdown-item p-3"
                           @click="supprimerPublication(post.id)"
                         >
@@ -578,7 +582,19 @@
                   </div>
                 </template>
               </div>
-              <button @click="loadMoreComments">Load More Comments</button>
+              <div>
+                <br />
+                <br />
+                <button
+                  class="btn btn-secondary mx-2"
+                  @click="loadMoreComments"
+                >
+                  More Comments
+                </button>
+                <button class="btn btn-secondary" @click="loadlessComments">
+                  Less Comments
+                </button>
+              </div>
             </div>
 
             <form
@@ -615,7 +631,7 @@ export default {
       displayedComments: [],
       //defaultImageUrl: require("../../../assets/images/user/user3.png"),
       defaultpic: require("@/assets/images/user/user3.png"),
-      defaultImageUrl2: require("../../../../assets/images/icon/01.png"),
+      defaultImageUrl2: require("../../../../assets/images/icon/unlike.png"),
       defaultImageUrl3: require("../../../../assets/images/icon/02.png"),
 
       userReactionData: {}, // Initialize as an empty object
@@ -705,7 +721,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`, // Ajouter le token d'authentification dans les en-têtes
             },
-          }
+          },
         );
 
         console.log(response.data);
@@ -724,7 +740,7 @@ export default {
           console.log(response.data);
 
           for (const publication of this.approvedPublications) {
-            console.log("fefe", this.publication);
+            console.log("fefe", this.approvedPublications);
 
             if (publication.isApproved === 1) {
               await this.loadCommentaires(publication.id, 2);
@@ -736,7 +752,7 @@ export default {
         .catch((error) => {
           console.error(error);
           alert(
-            "Erreur lors du chargement des publications approuvées. Veuillez réessayer plus tard."
+            "Erreur lors du chargement des publications approuvées. Veuillez réessayer plus tard.",
           );
         });
     },
@@ -761,7 +777,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         // console.log(
@@ -788,7 +804,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         this.loadApprovedPublications();
@@ -810,7 +826,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         console.log(response.data);
         this.editedComment = "";
@@ -836,7 +852,7 @@ export default {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }
+            },
           )
           .then((response) => {
             console.log(response.data);
@@ -864,12 +880,16 @@ export default {
         .catch((error) => {
           console.error(
             "Erreur lors de la suppression du commentaire :",
-            error
+            error,
           );
         });
     },
     loadMoreComments() {
       this.commentLimit += 2;
+      this.loadApprovedPublications();
+    },
+    loadlessComments() {
+      this.commentLimit -= 2;
       this.loadApprovedPublications();
     },
 
@@ -888,7 +908,7 @@ export default {
         .catch((error) => {
           console.error(error);
           alert(
-            "Erreur lors du chargement des commentaires. Veuillez réessayer plus tard."
+            "Erreur lors du chargement des commentaires. Veuillez réessayer plus tard.",
           );
         });
     },
@@ -966,7 +986,7 @@ export default {
         .put(
           `http://127.0.0.1:8000/api/modifierPublication/${this.publication.id}`,
           this.contenu,
-          { headers }
+          { headers },
         )
         .then((response) => {
           console.log("Publication updated:", response.data);
@@ -977,7 +997,7 @@ export default {
         .catch((error) => {
           console.error(
             "Erreur lors de la modification de la publication:",
-            error.response.data.error
+            error.response.data.error,
           );
         });
 
@@ -1004,7 +1024,7 @@ export default {
         .catch((error) => {
           console.error(error);
           alert(
-            "Erreur lors de l'acceptation de la publication. Veuillez réessayer plus tard."
+            "Erreur lors de l'acceptation de la publication. Veuillez réessayer plus tard.",
           );
         });
     },
@@ -1012,7 +1032,7 @@ export default {
     refuserPublication(publicationId) {
       axios
         .delete(
-          `http://127.0.0.1:8000/api/publication/refuser/${publicationId}`
+          `http://127.0.0.1:8000/api/publication/refuser/${publicationId}`,
         )
         .then((response) => {
           alert("La publication a été refusée avec succès");
@@ -1023,7 +1043,7 @@ export default {
         .catch((error) => {
           console.error(error);
           alert(
-            "Erreur lors du refus de la publication. Veuillez réessayer plus tard."
+            "Erreur lors du refus de la publication. Veuillez réessayer plus tard.",
           );
         });
     },
@@ -1057,7 +1077,7 @@ export default {
         .catch((error) => {
           console.error(error);
           alert(
-            "Erreur lors du chargement des publications non approuvées. Veuillez réessayer plus tard."
+            "Erreur lors du chargement des publications non approuvées. Veuillez réessayer plus tard.",
           );
         });
     },
@@ -1068,7 +1088,7 @@ export default {
         .then((response) => {
           // Filtrer les publications en attente d'acceptation de modification
           this.waitingForModificationPublications = response.data.filter(
-            (publication) => publication.isApproved === -1
+            (publication) => publication.isApproved === -1,
           );
           if (this.waitingForModificationPublications.length > 0) {
             this.publicationId = this.waitingForModificationPublications[0].id;
@@ -1077,7 +1097,7 @@ export default {
         .catch((error) => {
           console.error(error);
           alert(
-            "Erreur lors du chargement des publications en attente d'acceptation de modification. Veuillez réessayer plus tard."
+            "Erreur lors du chargement des publications en attente d'acceptation de modification. Veuillez réessayer plus tard.",
           );
         });
     },
@@ -1103,7 +1123,7 @@ export default {
       axios
         .delete(
           `http://127.0.0.1:8000/api/supprimerPublication/${publicationId}`,
-          { headers }
+          { headers },
         )
         .then((response) => {
           console.log(response.data.message);
@@ -1113,7 +1133,7 @@ export default {
         .catch((error) => {
           console.error(
             "Erreur lors de la suppression de la publication:",
-            error.response.data.error
+            error.response.data.error,
           );
         });
     },
