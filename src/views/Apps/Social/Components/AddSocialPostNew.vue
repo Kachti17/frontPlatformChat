@@ -26,6 +26,8 @@
                   userData.img_profile ? userData.img_profile : defaultImageUrl2
                 "
                 alt="image de profil"
+                class="avatar-30 img-fluid"
+
               />
             </div>
 
@@ -78,23 +80,7 @@
               </label>
             </li>
 
-            <!-- <li class="me-3 mb-md-0 mb-2">
-              <label for="input-video" class="btn btn-soft-primary">
-                <img
-                  src="../../../../assets/images/small/08.png"
-                  alt="icon"
-                  class="img-fluid me-2"
-                />
-                Video
-                <input
-                  id="input-video"
-                  type="file"
-                  ref="video_path"
-                  style="display: none"
-                  @change="handleVideoChange"
-                />
-              </label>
-            </li> -->
+
 
             <li class="me-3 mb-md-0 mb-2">
               <a
@@ -102,7 +88,7 @@
                 class="btn btn-soft-primary"
                 @click.prevent="showLinkInput = !showLinkInput"
                 ><img
-                src="../../../../assets/images/icon/link.png"
+                  src="../../../../assets/images/icon/link.png"
                   alt="icon"
                   class="img-fluid me-2"
                 />
@@ -373,15 +359,11 @@
             </template>
             <template v-if="post.contenu.image_path !== null">
               <img
-                :src="post.contenu.image_path"
-                alt="Image du post"
-                class="img-fluid rounded w-25"
-              />
-            </template>
-            <template v-if="post.contenu.video_path !== null">
-              <div class="ratio ratio-16x9">
-                <iframe :src="post.contenu.video_path" allowfullscreen></iframe>
-              </div>
+                  :src="post.contenu.image_path"
+                  alt="Image du post"
+                  class="img-fluid rounded w-35"
+                  style="width: 70%"
+                />
             </template>
           </div>
           <div
@@ -481,25 +463,19 @@
                       aria-expanded="false"
                       role="button"
                     >
-                      {{ post.nbr_comm }} Comment {{ commentaires[0] }}
+                      {{ post.nbr_comm }} Comment
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <hr />
-            <div class="total-comment-block">
+            <div class="total-comment-block commentaire-scrollable">
               <div
                 v-for="commentaire in post.commentaires"
                 :key="commentaire.id"
               >
-                <template
-                  v-if="
-                    commentaire.pub_id === post.id &&
-                    commentaire.pub_id === post.id &&
-                    (cIndex < commentLimit || showAllComments)
-                  "
-                >
+                <template v-if="commentaire.pub_id === post.id">
                   <div class="d-flex flex-wrap mt-3">
                     <div class="user-img">
                       <img
@@ -512,7 +488,7 @@
                         class="avatar-30 img-fluid"
                       />
                     </div>
-                    <div class="comment-data-block ms-3">
+                    <!-- <div class="comment-data-block ms-3">
                       <h5>
                         <b
                           >{{ commentaire.user.nom }}
@@ -547,6 +523,45 @@
                         >
                           Delete
                         </button>
+                      </div>
+                    </div> -->
+
+                    <div class="comment-data-block ms-3">
+                      <h5>
+                        <b
+                          >{{ commentaire.user.nom }}
+                          {{ commentaire.user.prenom }}</b
+                        >
+                      </h5>
+
+                      <h5 class="font-normal">
+                        {{ commentaire.contenu_comm }}
+                      </h5>
+                      <div
+                        class="d-flex flex-wrap align-items-center comment-activity"
+                      >
+                        <span class="small-text"
+                          >{{ formatDateTime(commentaire.created_at) }}
+                          &nbsp; &nbsp;
+                          <img
+                            v-if="commentaire.user_id === userData.id"
+                            class="avatar-15 img-fluid"
+                            src="@/assets/images/icon/edit.png"
+                            alt="Modifier"
+                            @click="openEditModal(commentaire)"
+                          />
+                          &nbsp; &nbsp;
+                          <img
+                            v-if="
+                              commentaire.user_id === userData.id ||
+                              userData.role === 'admin'
+                            "
+                            class="avatar-15 img-fluid"
+                            src="@/assets/images/icon/pb.png"
+                            alt="Supprimer"
+                            @click="deleteComment(commentaire.id)"
+                          />
+                        </span>
                       </div>
                     </div>
 
@@ -587,7 +602,6 @@
                   </div>
                 </template>
               </div>
-              <button @click="loadMoreComments">Load More Comments</button>
             </div>
 
             <form
@@ -632,7 +646,7 @@ export default {
       showApproved: true,
       newCommentContent: "",
       nouveauxCommentaires: {},
-      defaultImageUrl2: require("../../../../assets/images/icon/01.png"),
+      defaultImageUrl2: require("../../../../assets/images/icon/unlike.png"),
       defaultImageUrl3: require("../../../../assets/images/icon/02.png"),
       publicationId: null,
       selectedPostId: null,
@@ -667,10 +681,6 @@ export default {
   },
 
   methods: {
-    loadMoreComments() {
-      this.commentLimit += 2;
-      this.filterByUserId();
-    },
     async confirmEdit() {
       try {
         const token = localStorage.getItem("token"); // Récupérer le token depuis le local storage
@@ -684,7 +694,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`, // Ajouter le token d'authentification dans les en-têtes
             },
-          }
+          },
         );
 
         console.log(response.data);
@@ -703,17 +713,10 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
-        // console.log(
-        //   "Réaction de l'utilisateur pour la publication",
-        //   pubId,
-        //   ":",
-        //   response.data
-        // );
         this.userReactionData[pubId] = response.data;
-        // console.log("ekhdem", pubId, ":", this.userReactionData);
         return this.userReactionData;
       } catch (error) {
         console.error(error);
@@ -730,7 +733,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         this.filterByUserId();
@@ -765,25 +768,11 @@ export default {
         .catch((error) => {
           console.error(error);
           alert(
-            "Erreur lors du chargement des commentaires. Veuillez réessayer plus tard."
+            "Erreur lors du chargement des commentaires. Veuillez réessayer plus tard.",
           );
         });
     },
 
-    // loadCommentaires(publicationId) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/commentaires/${publicationId}`)
-    //     .then((response) => {
-    //       console.log("fgg", response.data);
-    //       this.commentaires = response.data;
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //       alert(
-    //         "Erreur lors du chargement des commentaires. Veuillez réessayer plus tard."
-    //       );
-    //     });
-    // },
     filterByUserId() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
@@ -810,7 +799,7 @@ export default {
         .catch((error) => {
           console.error(
             "Erreur lors du filtrage des publications par ID utilisateur :",
-            error.response.data.error
+            error.response.data.error,
           );
         });
     },
@@ -824,7 +813,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         console.log(response.data);
         this.filterByUserId();
@@ -846,7 +835,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         console.log(response.data);
       } catch (error) {
@@ -856,7 +845,7 @@ export default {
     async fetchComment(id) {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/comment/${id}`
+          `http://127.0.0.1:8000/api/comment/${id}`,
         );
         this.editedComment = response.data.contenu_comm;
         this.commentId = id;
@@ -882,7 +871,7 @@ export default {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         console.log(response.data);
         this.editedComment = "";
@@ -908,7 +897,7 @@ export default {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }
+            },
           )
           .then((response) => {
             console.log(response.data);
@@ -936,7 +925,7 @@ export default {
         .catch((error) => {
           console.error(
             "Erreur lors de la suppression du commentaire :",
-            error
+            error,
           );
         });
     },
@@ -970,18 +959,15 @@ export default {
       const token = localStorage.getItem("token");
 
       const headers = { Authorization: `Bearer ${token}` };
-      if (this.contenu.image_path && this.fileToUpload) {
-        this.contenu.image_path = this.fileToUpload;
-      } else if (!this.contenu.image_path) {
-        this.effacerImage();
-      }
-
+      if (this.contenu.image_path !== this.fileToUpload) {
+    this.contenu.image_path = this.fileToUpload; // Mettez à jour l'image
+  }
       console.log("tswr:", this.contenu.image_path);
       axios
         .put(
           `http://127.0.0.1:8000/api/modifierPublication/${this.publication.id}`,
           this.contenu,
-          { headers }
+          { headers },
         )
         .then((response) => {
           console.log("Publication updated:", response.data);
@@ -992,7 +978,7 @@ export default {
         .catch((error) => {
           console.error(
             "Erreur lors de la modification de la publication:",
-            error.response.data.error
+            error.response.data.error,
           );
         });
 
@@ -1027,7 +1013,7 @@ export default {
       axios
         .delete(
           `http://127.0.0.1:8000/api/supprimerPublication/${publicationId}`,
-          { headers }
+          { headers },
         )
         .then((response) => {
           console.log(response.data.message);
@@ -1037,7 +1023,7 @@ export default {
         .catch((error) => {
           console.error(
             "Erreur lors de la suppression de la publication:",
-            error.response.data.error
+            error.response.data.error,
           );
         });
     },
@@ -1060,3 +1046,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.commentaire-scrollable {
+  max-height: 278px; /* Définissez la hauteur maximale selon vos besoins */
+  overflow-y: auto; /* Active le défilement vertical si nécessaire */
+}
+</style>

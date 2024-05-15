@@ -6,25 +6,49 @@
         style="height: 150px"
       >
         <div class="inner-page-title">
-          <h3 class="text-white">Table of Users</h3>
+          <h3 class="text-white">Table of Chat Rooms</h3>
         </div>
       </div>
     </div>
     <div class="col-sm-60">
       <iq-card class="w-100">
         <template v-slot:headerTitle>
-          <h4 class="card-title">List of Users</h4>
+          <h4 class="card-title">Chat rooms</h4>
         </template>
         <template v-slot:body>
           <div id="table" class="table-editable">
+            <h1>Liste des chat rooms</h1>
+            <!-- Bouton pour afficher le formulaire d'ajout de room -->
             <span class="table-add float-end mb-3 mr-2">
-              <router-link
-                to="/auth/signup"
+              <button
+                @click="showAddForm"
                 class="btn btn-sm btn-success d-flex align-items-center"
               >
-                <i class="material-symbols-outlined me-1 md-18">add</i>Add user
-              </router-link>
+                <i class="material-symbols-outlined me-1 md-18">add</i>Add Chat
+                room
+              </button>
             </span>
+
+            <!-- Formulaire d'ajout de room -->
+            <div v-if="showForm" class="add-room-form">
+              <h2>Add Chat Room</h2>
+              <form @submit.prevent="addChatRoom">
+                <div class="mb-3">
+                  <label for="roomName" class="form-label"
+                    >Enter chat room name</label
+                  >
+                  <input
+                    type="text"
+                    v-model="newRoomName"
+                    class="form-control"
+                    id="roomName"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+              </form>
+            </div>
+
             <!-- Barre de recherche -->
             <form action="#" class="searchbox d-flex align-items-center">
               <a
@@ -52,36 +76,24 @@
               <table class="table table-bordered table-striped text-left">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Password</th>
-                    <th>Phone Number</th>
-                    <th>Role</th>
-                    <th>Department</th>
+                    <th>Room name</th>
+                    <th>Users Accessing This Room</th>
 
                     <th>Created At</th>
                     <!-- <th>Updated At</th> -->
-                    <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(user, index) in filteredUsers" :key="index">
-                    <td>{{ user.nom }}</td>
-                    <td>{{ user.prenom }}</td>
-                    <td>{{ user.email }}</td>
-                    <td class="password-cell">{{ user.password }}</td>
-                    <td>{{ user.tel }}</td>
-                    <td>{{ user.role }}</td>
-                    <td>{{ user.departement }}</td>
+                  <tr v-for="room in chatRooms" :key="room.id">
+                    <td>{{ room.name }}</td>
+                    <td></td>
 
-                    <td>{{ formatDate(user.created_at) }}</td>
-                    <!-- <td>{{ formatDate(user.updated_at) }}</td> -->
+                    <td>{{ formatDate(room.created_at) }}</td>
                     <td>
                       <button
                         type="button"
                         class="btn btn-danger btn-sm"
-                        @click="confirmDeleteUser(user.id, index)"
+                        @click="deleteRoom(room.id)"
                       >
                         Delete
                       </button>
@@ -98,14 +110,20 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      users: [], // Pour stocker les utilisateurs récupérés
-      deleteUserId: null, // ID de l'utilisateur à supprimer
       deleteIndex: null, // Index de l'utilisateur à supprimer dans la liste
       searchText: "", // Texte de recherche saisi par l'utilisateur
+      chatRooms: [],
+      showForm: false,
+      newRoomName: "",
     };
+  },
+  mounted() {
+    this.fetchChatRooms();
+    console.log("aaa", this.fetchChatRooms);
   },
   methods: {
     formatDate(isoDate) {
@@ -120,51 +138,59 @@ export default {
       };
       return new Date(isoDate).toLocaleString("en-GB", options);
     },
-    async showAllUsers() {
+    async fetchChatRooms() {
+      const token = localStorage.getItem("token");
+
+      const headers = { Authorization: `Bearer ${token}` };
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/users");
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-        const usersData = await response.json();
-        this.users = usersData; // Mettre à jour la liste des utilisateurs dans les données de Vue.js
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/chat-rooms",
+          { headers },
+        ); // Remplacez '/api/chat-rooms' par votre route API correcte
+        this.chatRooms = response.data.data;
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching chat rooms:", error);
       }
     },
-    confirmDeleteUser(userId, index) {
-      this.deleteUserId = userId;
-      this.deleteIndex = index;
-      // Afficher la boîte de dialogue de confirmation ici
-      if (confirm("Are you sure you want to delete this user ?")) {
-        this.deleteUser(); // Si l'utilisateur confirme la suppression, appeler la fonction deleteUser
-      } else {
-        // Réinitialiser les valeurs
-        this.deleteUserId = null;
-        this.deleteIndex = null;
-      }
+    showAddForm() {
+      this.showForm = true;
     },
-    async deleteUser() {
+    async addChatRoom() {
+      const token = localStorage.getItem("token");
+
+      const headers = { Authorization: `Bearer ${token}` };
       try {
+        await axios.post(
+          "http://127.0.0.1:8000/api/chat-rooms",
+          {
+            name: this.newRoomName,
+          },
+          { headers },
+        );
+        this.newRoomName = ""; // Réinitialiser le champ du nom du room
+        this.showForm = false; // Cacher le formulaire après l'ajout
+        this.fetchChatRooms(); // Actualiser la liste des rooms
+      } catch (error) {
+        console.error("Error adding room:", error);
+      }
+    },
+
+    async deleteRoom(roomId) {
+      const token = localStorage.getItem("token");
+
+      const headers = { Authorization: `Bearer ${token}` };
+      if (window.confirm("Are you sure you want to delete this room?")) {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/DeleteUser/${this.deleteUserId}`,
+          `http://127.0.0.1:8000/api//chat-rooms/{id}`,
+          { headers },
           {
             method: "DELETE",
           },
         );
-        if (!response.ok) {
-          throw new Error("Failed to delete user");
-        }
-        this.users.splice(this.deleteIndex, 1); // Supprimer l'utilisateur de la liste dans Vue.js
-        console.log("User deleted successfully");
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      } finally {
-        // Réinitialiser les valeurs après la suppression
-        this.deleteUserId = null;
-        this.deleteIndex = null;
+        this.fetchChatRooms();
       }
     },
+
     async searchUsers() {
       try {
         const response = await fetch(
@@ -180,18 +206,9 @@ export default {
       }
     },
   },
-  computed: {
-    filteredUsers() {
-      // Filtrer les utilisateurs localement en fonction du texte de recherche pour le nom ou le prénom
-      return this.users.filter(
-        (user) =>
-          user.nom.toLowerCase().includes(this.searchText.toLowerCase()) ||
-          user.prenom.toLowerCase().includes(this.searchText.toLowerCase()),
-      );
-    },
-  },
+
   created() {
-    this.showAllUsers(); // Appeler la méthode pour afficher les utilisateurs au chargement de la page
+    this.fetchChatRooms(); // Appeler la méthode pour afficher les utilisateurs au chargement de la page
   },
 };
 </script>
@@ -205,5 +222,8 @@ export default {
 /* Agrandir la table à droite */
 .table-responsive-md {
   width: 100%;
+}
+.add-room-form {
+  margin-top: 20px;
 }
 </style>

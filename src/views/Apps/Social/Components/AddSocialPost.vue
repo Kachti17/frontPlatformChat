@@ -43,16 +43,7 @@
               Picture</a
             >
           </li>
-          <!-- <li class="me-3 mb-md-0 mb-2">
-            <a href="#" class="btn btn-soft-primary"
-              ><img
-                src="../../../../assets/images/small/08.png"
-                alt="icon"
-                class="img-fluid me-2"
-              />
-              Video</a
-            >
-          </li> -->
+
           <li class="me-3 mb-md-0 mb-2">
             <a
               href="#"
@@ -136,24 +127,6 @@
               </label>
             </li>
 
-            <!-- <li class="me-3 mb-md-0 mb-2">
-              <label for="input-video" class="btn btn-soft-primary">
-                <img
-                  src="../../../../assets/images/small/08.png"
-                  alt="icon"
-                  class="img-fluid me-2"
-                />
-                Video
-                <input
-                  id="input-video"
-                  type="file"
-                  ref="video_path"
-                  style="display: none"
-                  @change="handleVideoChange"
-                />
-              </label>
-            </li> -->
-
             <li class="me-3 mb-md-0 mb-2">
               <a
                 href="#"
@@ -177,6 +150,12 @@
               />
             </div>
           </ul>
+          <img
+            v-if="contenu.image_path"
+            :src="contenu.image_path"
+            alt="Selected Image"
+            style="max-width: 90%; max-height: 90px; margin-top: 10px"
+          />
           <button
             class="btn btn-primary d-block w-100 mt-3"
             type="button"
@@ -214,7 +193,10 @@ export default {
           name: "Feeling/Activity",
         },
       ],
-
+      contenu: {
+        image_path: null, // Initialiser à null
+        // Autres propriétés de contenu
+      },
       texte: "",
       lien: "",
       image_path: null,
@@ -230,6 +212,8 @@ export default {
     handleFileInputChange(event) {
       const file = event.target.files[0];
       const fileType = file.type.split("/")[1];
+      this.contenu.image_path = URL.createObjectURL(file);
+
       if (!file) {
         console.error("No file selected.");
         return;
