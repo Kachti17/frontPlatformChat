@@ -24,7 +24,7 @@
     "icon": "las la-user"
   },
   {
-    "title": "Friend Lists",
+    "title": "List of users",
     "name": "sidebar.friend_list",
     "is_heading": false,
     "is_active": false,

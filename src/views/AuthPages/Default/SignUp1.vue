@@ -118,6 +118,23 @@
                   <option value="user">User</option>
                 </select>
               </div>
+              <div class="form-group" v-if="role === 'user'">
+                <label class="form-label" for="exampleDepartement"
+                  >Departement *</label
+                >
+                <select
+                  v-model="departement"
+                  class="form-select"
+                  id="exampleDepartement"
+                  required
+                >
+                  <option value="" disabled selected hidden>
+                    Select a department
+                  </option>
+                  <option value="It department">It department</option>
+                  <option value="Call center">Call center</option>
+                </select>
+              </div>
               <div class="d-inline-block w-100">
                 <div class="form-check d-inline-block mt-2 pt-1">
                   <input
@@ -165,6 +182,7 @@ export default {
       password: "",
       tel: "",
       role: "",
+      department: "",
       errorMessage: "",
       successMessage: "",
     };
@@ -183,7 +201,8 @@ export default {
             password: this.password,
             tel: this.tel.trim() !== "" ? this.tel : null,
             role: this.role,
-          }
+            departement: this.role === 'user' ? this.departement : null, // Ajouter la logique pour le département
+          },
         );
 
         if (response.status === 201) {

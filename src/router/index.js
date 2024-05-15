@@ -207,6 +207,12 @@ const tableChildRoute = (prop, mode = false) => [
     name: prop + '.datatable',
     meta: { auth: true, name: 'datatable' },
     component: () => import('../views/Tables/DataTable')
+  },
+  {
+    path: 'chatroom',
+    name: prop + '.chatroom',
+    meta: { auth: true, name: 'chatroom' },
+    component: () => import('../views/Tables/ChatRoom')
   }
 ]
 const userChildRoute = (prop, mode = false) => [

@@ -1,18 +1,22 @@
 <template>
-  <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-    <chat-room-selection
-      v-if="currentRoom.id"
-      :rooms="chatRooms"
-      :currentRoom="currentRoom"
-      v-on:roomchanged="setRoom($event)"
-    />
-  </h2>
+  <div class="sticky-top">
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+      <chat-room-selection
+        v-if="currentRoom.id"
+        :rooms="chatRooms"
+        :currentRoom="currentRoom"
+        v-on:roomchanged="setRoom($event)"
+      />
+    </h2>
+  </div>
 
-  <div class="main-chat">
+  <div class="content main-chat">
     <div class="py-12">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
         <message-container :messages="messages" />
-        <input-message :room="currentRoom" v-on:messagesent="getMessages()" />
+        <div class="input-message-wrapper">
+          <input-message :room="currentRoom" v-on:messagesent="getMessages()" />
+        </div>
       </div>
     </div>
   </div>
@@ -132,7 +136,7 @@ export default {
           .catch((error) => {
             console.log(error);
           });
-      }, 5000); // 5000 millisecondes, soit 5 secondes
+      }, 2000); // 5000 millisecondes, soit 5 secondes
     },
   },
   created() {
@@ -142,5 +146,23 @@ export default {
 </script>
 
 <style scoped>
-/* Styles spécifiques à la page principale */
+.content {
+  padding-top: 100px; /* Ajoutez un espace équivalent à la hauteur de votre élément fixé */
+}
+.sticky-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Assurez-vous que le z-index est suffisamment élevé pour être au-dessus du contenu */
+  background-color: #fff; /* Ajoutez une couleur de fond si nécessaire */
+}
+.input-message-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999; /* Assurez-vous que le composant est au-dessus des autres éléments */
+  background-color: white; /* Fond blanc pour le rendre distinct */
+}
 </style>

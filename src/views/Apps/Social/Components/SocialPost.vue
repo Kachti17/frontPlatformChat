@@ -118,21 +118,21 @@
   <div class="col-lg-12">
     <div class="d-flex justify-content-between mb-3">
       <button
-        class="btn btn-dark"
+        class="btn btn-primary"
         @click="showApproved = true"
         v-if="userData?.role !== 'user'"
       >
         Approved Publications
       </button>
       <button
-        class="btn btn-dark"
+        class="btn btn-primary"
         @click="showApproved = false"
         v-if="userData?.role !== 'user'"
       >
         Unapproved publications
       </button>
       <button
-        class="btn btn-dark"
+        class="btn btn-primary"
         @click="showApproved = null"
         v-if="userData?.role !== 'user'"
       >
@@ -173,11 +173,17 @@
                     v-if="!showApproved && userData?.role !== 'user'"
                     class="d-flex justify-content-between mt-3"
                   >
-                    <button @click="accepterPublication(post.id)">
-                      Accepter</button
+                    <button
+                      class="btn btn-success"
+                      @click="accepterPublication(post.id)"
+                    >
+                      Approve</button
                     >&nbsp;
-                    <button @click="refuserPublication(post.id)">
-                      Refuser
+                    <button
+                      class="btn btn-danger"
+                      @click="refuserPublication(post.id)"
+                    >
+                      Refuse
                     </button>
                   </div>
 
@@ -227,152 +233,6 @@
                             id="post-modal-data"
                             body-class="iq-card iq-card-block iq-card-stretch iq-card-height"
                           >
-                            <!-- <modal
-                              id="newModal"
-                              dialogClass="modal-fullscreen-sm-down  modal-margin"
-                              tabindex="-1"
-                              title="New Modal Title"
-                              aria-labelledby="newModalLabel"
-                              aria-hidden="true"
-                            >
-                              <model-header>
-                                <h5 class="modal-title" id="modalsLabel">
-                                  Update Post
-                                </h5>
-                                <a
-                                  href="javascript:void(0);"
-                                  class="lh-1"
-                                  data-bs-dismiss="modal"
-                                >
-                                  <span class="material-symbols-outlined"
-                                    >close</span
-                                  >
-                                </a>
-                              </model-header>
-                              <model-body>
-                                <div class="d-flex align-items-center">
-                                  <div class="user-img">
-                                    <img
-                                      :src="
-                                        userData.img_profile
-                                          ? userData.img_profile
-                                          : defaultImageUrl2
-                                      "
-                                      alt="image de profil"
-                                    />
-                                  </div>
-
-                                  <form
-                                    class="post-text ms-3 w-100"
-                                    action="javascript:void();"
-                                  >
-                                    <input
-                                      type="text"
-                                      class="form-control rounded"
-                                      placeholder="Write something here ..."
-                                      v-model="contenu.texte"
-                                      required
-                                      style="border: none"
-                                    />
-                                    <img
-                                      v-if="contenu.image_path"
-                                      :src="contenu.image_path"
-                                      alt="Selected Image"
-                                      style="max-width: 100%; margin-top: 10px"
-                                    />
-                                    <button
-                                      v-if="contenu.image_path"
-                                      type="button"
-                                      class="btn btn-danger mt-2"
-                                      @click="effacerImage"
-                                    >
-                                      Effacer l'image
-                                    </button>
-                                  </form>
-                                </div>
-                                <br />
-                                <br />
-
-                                <ul
-                                  class="post-opt-block d-flex list-inline m-0 p-0 flex-wrap"
-                                >
-                                  <li class="me-3 mb-md-0 mb-2">
-                                    <label
-                                      for="input-photo"
-                                      class="btn btn-soft-primary"
-                                    >
-                                      <img
-                                        src="../../../../assets/images/small/07.png"
-                                        alt="icon"
-                                        class="img-fluid me-2"
-                                      />
-                                      Picture
-                                      <input
-                                        id="input-photo"
-                                        type="file"
-                                        ref="image_path"
-                                        style="display: none"
-                                        class="form-control"
-                                        @change="handleFileInputChange2"
-                                      />
-                                    </label>
-                                  </li>
-
-                                  <li class="me-3 mb-md-0 mb-2">
-                                    <label
-                                      for="input-video"
-                                      class="btn btn-soft-primary"
-                                    >
-                                      <img
-                                        src="../../../../assets/images/small/08.png"
-                                        alt="icon"
-                                        class="img-fluid me-2"
-                                      />
-                                      Video
-                                      <input
-                                        id="input-video"
-                                        type="file"
-                                        ref="video_path"
-                                        style="display: none"
-                                        @change="handleVideoChange"
-                                      />
-                                    </label>
-                                  </li>
-
-                                  <li class="me-3 mb-md-0 mb-2">
-                                    <a
-                                      href="#"
-                                      class="btn btn-soft-primary"
-                                      @click.prevent="
-                                        showLinkInput = !showLinkInput
-                                      "
-                                      ><img
-                                        src="../../../../assets/images/small/09.png"
-                                        alt="icon"
-                                        class="img-fluid me-2"
-                                      />
-                                      Link</a
-                                    >
-                                  </li>
-                                  <div v-if="showLinkInput">
-                                    <input
-                                      type="url"
-                                      placeholder="Enter the link here..."
-                                      class="rounded form-control my-2"
-                                      v-model="contenu.lien"
-                                      style="border: none"
-                                    />
-                                  </div>
-                                </ul>
-                                <button
-                                  class="btn btn-primary d-block w-100 mt-3"
-                                  type="button"
-                                  @click="modifierPublication(post.id)"
-                                >
-                                  Update
-                                </button>
-                              </model-body>
-                            </modal> -->
                           </iq-card>
                         </div>
                         <a
@@ -415,13 +275,9 @@
                 <img
                   :src="post.contenu.image_path"
                   alt="Image du post"
-                  class="img-fluid rounded w-25"
+                  class="img-fluid rounded w-35"
+                  style="width: 70%"
                 />
-              </div>
-            </template>
-            <template v-if="post.contenu.video_path !== null">
-              <div class="ratio ratio-16x9">
-                <iframe :src="post.contenu.video_path" allowfullscreen></iframe>
               </div>
             </template>
           </div>
@@ -482,18 +338,13 @@
               </div>
             </div>
             <hr />
-            <div class="total-comment-block">
+            <div class="total-comment-block commentaire-scrollable">
               <div
                 v-for="(commentaire, cIndex) in post.commentaires"
                 :key="commentaire.id"
                 ::key="cIndex"
               >
-                <template
-                  v-if="
-                    commentaire.pub_id === post.id &&
-                    (cIndex < commentLimit || showAllComments)
-                  "
-                >
+                <template v-if="commentaire.pub_id === post.id">
                   <div class="d-flex flex-wrap mt-3">
                     <div class="user-img">
                       <img
@@ -506,43 +357,72 @@
                         class="avatar-30 img-fluid"
                       />
                     </div>
-                    <div class="comment-data-block ms-3">
-                      <h5>
-                        <b
-                          >{{ commentaire.user.nom }}
-                          {{ commentaire.user.prenom }}</b
-                        >
-                      </h5>
+                    <div class="d-flex align-items-center justify-content-end">
+                      <div class="comment-data-block ms-3">
+                        <h5>
+                          <b
+                            >{{ commentaire.user.nom }}
+                            {{ commentaire.user.prenom }}</b
+                          >
+                        </h5>
 
-                      <h5 class="font-normal">
-                        {{ commentaire.contenu_comm }}
-                      </h5>
-                      <div
-                        class="d-flex flex-wrap align-items-center comment-activity"
-                      >
-                        <span class="small-text">{{
-                          formatDateTime(commentaire.created_at)
-                        }}</span>
+                        <h5 class="font-normal">
+                          {{ commentaire.contenu_comm }}
+                        </h5>
+                        <div
+                          class="d-flex flex-wrap align-items-center comment-activity"
+                        >
+                          <span class="small-text"
+                            >{{ formatDateTime(commentaire.created_at) }}
+                            &nbsp; &nbsp;
+                            <img
+                              v-if="commentaire.user_id === userData.id"
+                              class="avatar-20 img-fluid"
+                              src="@/assets/images/icon/edit.png"
+                              alt="Modifier"
+                              @click="openEditModal(commentaire)"
+                            />
+                            &nbsp; &nbsp;
+                            <img
+                              v-if="
+                                commentaire.user_id === userData.id ||
+                                userData.role === 'admin'
+                              "
+                              class="avatar-20 img-fluid"
+                              src="@/assets/images/icon/pb.png"
+                              alt="Supprimer"
+                              @click="deleteComment(commentaire.id)"
+                            />
+                          </span>
+                        </div>
                       </div>
-                      <div class="d-flex flex-wrap mt-3">
+                      <!-- <div class="d-flex flex-wrap mt-3 t2">
                         <button
+                          class="edit-button"
                           v-if="commentaire.user_id === userData.id"
                           @click="openEditModal(commentaire)"
-                          class="btn btn-primary me-2"
                         >
-                          Update
+                          <svg class="edit-svgIcon" viewBox="0 0 512 512">
+                            <path
+                              d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"
+                            ></path>
+                          </svg>
                         </button>
                         <button
+                          class="delete-button"
                           v-if="
                             commentaire.user_id === userData.id ||
                             userData.role === 'admin'
                           "
                           @click="deleteComment(commentaire.id)"
-                          class="btn btn-danger"
                         >
-                          Delete
+                          <svg class="delete-svgIcon" viewBox="0 0 448 512">
+                            <path
+                              d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                            ></path>
+                          </svg>
                         </button>
-                      </div>
+                      </div> -->
                     </div>
 
                     <div class="card-post-toolbar ml-auto">
@@ -567,13 +447,13 @@
                               class="btn btn-primary"
                               @click="confirmEdit"
                             >
-                              Confirmer
+                              Confirm
                             </button>
                             <button
                               class="btn btn-secondary"
                               @click="closeEditModal"
                             >
-                              Annuler
+                              Cancel
                             </button>
                           </div>
                         </div>
@@ -581,19 +461,6 @@
                     </div>
                   </div>
                 </template>
-              </div>
-              <div>
-                <br />
-                <br />
-                <button
-                  class="btn btn-secondary mx-2"
-                  @click="loadMoreComments"
-                >
-                  More Comments
-                </button>
-                <button class="btn btn-secondary" @click="loadlessComments">
-                  Less Comments
-                </button>
               </div>
             </div>
 
@@ -884,8 +751,12 @@ export default {
           );
         });
     },
-    loadMoreComments() {
-      this.commentLimit += 2;
+    loadMoreComments(postId) {
+      const post = this.filteredPublications.find((p) => p.id === postId);
+      console.log("wseltch", post);
+
+      console.log("wselt");
+      post.commentLimit += 2;
       this.loadApprovedPublications();
     },
     loadlessComments() {
@@ -975,10 +846,12 @@ export default {
       const token = localStorage.getItem("token");
 
       const headers = { Authorization: `Bearer ${token}` };
-      if (this.contenu.image_path && this.fileToUpload) {
-        this.contenu.image_path = this.fileToUpload;
-      } else if (!this.contenu.image_path) {
-        this.effacerImage();
+      console.log("aaa", this.contenu.image_path);
+      // if (this.contenu.image_path && this.fileToUpload) {
+      //   this.contenu.image_path = this.fileToUpload;
+      // }
+      if (this.contenu.image_path !== this.fileToUpload) {
+        this.contenu.image_path = this.fileToUpload; // Mettez à jour l'image
       }
 
       console.log("tswr:", this.contenu.image_path);
@@ -1010,6 +883,7 @@ export default {
     },
     effacerImage() {
       this.contenu.image_path = null; // ou null
+      this.fileToUpload = null;
     },
 
     accepterPublication(publicationId) {
@@ -1142,6 +1016,142 @@ export default {
 </script>
 
 <style>
+.t1 {
+  margin-left: 0px;
+}
+.t2 {
+  margin-left: 200px;
+  margin-top: 50px;
+}
+.commentaire-scrollable {
+  max-height: 278px; /* Définissez la hauteur maximale selon vos besoins */
+  overflow-y: auto; /* Active le défilement vertical si nécessaire */
+}
+.edit-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(148, 148, 148);
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+  text-decoration: none !important;
+}
+
+.edit-svgIcon {
+  width: 17px;
+  transition-duration: 0.3s;
+}
+
+.edit-svgIcon path {
+  fill: rgb(255, 255, 255);
+}
+
+.edit-button:hover {
+  width: 120px;
+  border-radius: 50px;
+  transition-duration: 0.3s;
+  background-color: rgb(255, 69, 69);
+  align-items: center;
+}
+
+.edit-button:hover .edit-svgIcon {
+  width: 20px;
+  transition-duration: 0.3s;
+  transform: translateY(60%);
+  -webkit-transform: rotate(360deg);
+  -moz-transform: rotate(360deg);
+  -o-transform: rotate(360deg);
+  -ms-transform: rotate(360deg);
+  transform: rotate(360deg);
+}
+
+.edit-button::before {
+  display: none;
+  content: "Edit";
+  color: white;
+  transition-duration: 0.3s;
+  font-size: 2px;
+}
+
+.edit-button:hover::before {
+  display: block;
+  padding-right: 10px;
+  font-size: 13px;
+  opacity: 1;
+  transform: translateY(0px);
+  transition-duration: 0.3s;
+}
+
+.delete-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(148, 148, 148);
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+
+.delete-svgIcon {
+  width: 15px;
+  transition-duration: 0.3s;
+}
+
+.delete-svgIcon path {
+  fill: rgb(255, 255, 255);
+}
+
+.delete-button:hover {
+  width: 90px;
+  border-radius: 50px;
+  transition-duration: 0.3s;
+  background-color: rgb(255, 69, 69);
+  align-items: center;
+}
+
+.delete-button:hover .delete-svgIcon {
+  width: 20px;
+  transition-duration: 0.3s;
+  transform: translateY(60%);
+  -webkit-transform: rotate(360deg);
+  -moz-transform: rotate(360deg);
+  -o-transform: rotate(360deg);
+  -ms-transform: rotate(360deg);
+  transform: rotate(360deg);
+}
+
+.delete-button::before {
+  display: none;
+  content: "Delete";
+  color: white;
+  transition-duration: 0.3s;
+  font-size: 2px;
+}
+
+.delete-button:hover::before {
+  display: block;
+  padding-right: 10px;
+  font-size: 13px;
+  opacity: 1;
+  transform: translateY(0px);
+  transition-duration: 0.3s;
+}
+
 .approved {
   border: 2px solid green; /* Exemple de style pour les posts approuvés */
 }
@@ -1154,5 +1164,10 @@ export default {
 }
 .small-text {
   font-size: 0.85em; /* Exemple de taille de police plus petite */
+}
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* Pour centrer verticalement les boutons */
 }
 </style>

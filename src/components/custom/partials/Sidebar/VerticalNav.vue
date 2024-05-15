@@ -819,6 +819,15 @@
         <span class="item-name">User Managment</span>
       </router-link>
     </li>
+    <li class="nav-item" v-if="userData?.role == 'admin'">
+      <router-link
+        :class="checkActive('table.chatroom') ? 'active nav-link' : 'nav-link'"
+        :to="{ name: 'table.chatroom' }"
+      >
+        <i class="icon material-symbols-outlined"> admin_panel_settings </i>
+        <span class="item-name">Chat Room Managment</span>
+      </router-link>
+    </li>
     <!-- <li class="nav-item">
           <router-link
             :class="
