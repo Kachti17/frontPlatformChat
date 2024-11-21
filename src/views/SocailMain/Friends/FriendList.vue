@@ -33,13 +33,12 @@
                       <h4 class="text-primary">
                         <a href="/profil-ami"> {{ utilisateur.nom }}</a>
                       </h4>
-                      <h6>{{ utilisateur.prenom }}</h6>
-                      <p>{{ utilisateur.tel }}</p>
+                      <h4 class="text-primary">
+                        <a href="/profil-ami"> {{ utilisateur.prenom }}</a>
+                      </h4>
+                      <br />
+                      <p>Phone number : {{ utilisateur.tel }}</p>
                       <p><strong>Role : </strong> {{ utilisateur.role }}</p>
-                      <p>
-                        <strong>Department : </strong>
-                        {{ utilisateur.departement }}
-                      </p>
                     </div>
                   </div>
                 </div>

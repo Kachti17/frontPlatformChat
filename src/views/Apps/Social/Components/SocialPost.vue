@@ -21,13 +21,19 @@
         <model-body>
           <div class="d-flex align-items-center">
             <div class="user-img">
+
               <img
-                :src="
+              :src="
                   userData.img_profile ? userData.img_profile : defaultImageUrl2
-                "
-                alt="image de profil"
-                class="avatar-30 img-fluid"
-              />
+                "  alt="image de profil"
+  class="avatar-135 img-fluid"
+  style="
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+  "
+/>
             </div>
 
             <form class="post-text ms-3 w-100" action="javascript:void();">
@@ -44,7 +50,7 @@
                 v-if="contenu.image_path"
                 :src="contenu.image_path"
                 alt="Selected Image"
-                style="max-width: 70%; max-height: 70px; margin-top: 10px"
+                style="max-width: 290px; max-height: 290px; margin-top: 10px"
               />
               <button
                 v-if="contenu.image_path"
@@ -155,7 +161,13 @@
                     post.user.img_profile ? post.user.img_profile : defaultpic
                   "
                   alt="image de profil"
-                  class="avatar-45 img-fluid"
+                  class="avatar-135 img-fluid"
+                  style="
+                    width: 45px;
+                    height: 45px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                  "
                 />
               </div>
               <div class="w-100">
@@ -276,7 +288,7 @@
                   :src="post.contenu.image_path"
                   alt="Image du post"
                   class="img-fluid rounded w-35"
-                  style="width: 70%"
+                  style="width: 50%"
                 />
               </div>
             </template>
@@ -348,14 +360,20 @@
                   <div class="d-flex flex-wrap mt-3">
                     <div class="user-img">
                       <img
-                        :src="
+                      :src="
                           commentaire.user.img_profile
                             ? commentaire.user.img_profile
                             : defaultpic
-                        "
-                        alt="image de profil"
-                        class="avatar-30 img-fluid"
-                      />
+                        "  alt="image de profil"
+  class="avatar-135 img-fluid"
+  style="
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+  "
+/>
+
                     </div>
                     <div class="d-flex align-items-center justify-content-end">
                       <div class="comment-data-block ms-3">
@@ -828,12 +846,10 @@ export default {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        console.log("test oussema ");
-
         console.log("nourrr ", fileType);
         const base64String =
           `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
-        // this.fileToUpload = base64String;
+        this.fileToUpload = base64String;
         this.contenu.image_path = base64String;
         console.log("oussema ", this.contenu.image_path);
       };
@@ -890,7 +906,7 @@ export default {
       axios
         .post(`http://127.0.0.1:8000/api/publication/accepter/${publicationId}`)
         .then((response) => {
-          alert("La publication a été acceptée avec succès");
+          alert("The publication has been successfully accepted");
           this.loadUnapprovedPublications();
           this.loadWaitingForModificationPublications();
           this.loadApprovedPublications();
@@ -909,7 +925,7 @@ export default {
           `http://127.0.0.1:8000/api/publication/refuser/${publicationId}`,
         )
         .then((response) => {
-          alert("La publication a été refusée avec succès");
+          alert("The publication was successfully rejected");
           // Rechargez les publications non approuvées après le refus
           this.loadUnapprovedPublications();
           this.loadWaitingForModificationPublications();

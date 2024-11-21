@@ -171,8 +171,10 @@ export default {
       }
     },
     goBack() {
-      this.$router.go(-1);
-    },
+  this.$router.push("/app/calendar").then(() => {
+    // Recharger la page après la navigation
+    window.location.reload();
+  });},
 
     async participerEvenement(idEvenement) {
       try {

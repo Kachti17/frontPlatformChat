@@ -134,6 +134,11 @@ const chatChildRoutes = (prop, mode) => [
     path: 'chat',
     name: prop + '.chat',
     component: () => import('../views/Apps/Chat/Index')
+  },
+  {
+    path: 'chat2',
+    name: prop + '.chat2',
+    component: () => import('../views/Apps/Chat/Chat2')
   }
 ]
 const pagesChildRoutes = (prop, mode = false) => [

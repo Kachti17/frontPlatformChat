@@ -10,14 +10,19 @@
       <template v-slot:body>
         <div class="d-flex align-items-center">
           <div class="user-img">
+           
             <img
-              :src="
+            :src="
                 userData?.img_profile ? userData?.img_profile : defaultImageUrl2
-              "
-              alt="image de profil"
-              class="avatar-45 img-fluid"
-            />
-          </div>
+              "  alt="image de profil"
+  class="avatar-135 img-fluid"
+  style="
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+  "
+/>          </div>
           <form class="post-text ml-3 w-100">
             <input
               type="text"
@@ -92,7 +97,13 @@
                     : defaultImageUrl2
                 "
                 alt="image de profil"
-                class="avatar-45 img-fluid"
+                class="avatar-135 img-fluid"
+                style="
+                  width: 45px;
+                  height: 45px;
+                  border-radius: 50%;
+                  object-fit: cover;
+                "
               />
             </div>
             <form class="post-text ms-3 w-100" action="javascript:void();">

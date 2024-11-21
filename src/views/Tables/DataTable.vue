@@ -1,5 +1,8 @@
 <template>
-  <div class="row row-cols-1 w-100 mx-auto">
+  <div v-if="loading">
+    <Loader />
+  </div>
+  <div v-else class="row row-cols-1 w-100 mx-auto">
     <div class="col-sm-28" style="height: 480%">
       <div
         class="card position-relative inner-page-bg bg-primary"
@@ -58,7 +61,6 @@
                     <th>Password</th>
                     <th>Phone Number</th>
                     <th>Role</th>
-                    <th>Department</th>
 
                     <th>Created At</th>
                     <!-- <th>Updated At</th> -->
@@ -73,7 +75,6 @@
                     <td class="password-cell">{{ user.password }}</td>
                     <td>{{ user.tel }}</td>
                     <td>{{ user.role }}</td>
-                    <td>{{ user.departement }}</td>
 
                     <td>{{ formatDate(user.created_at) }}</td>
                     <!-- <td>{{ formatDate(user.updated_at) }}</td> -->
@@ -98,13 +99,19 @@
 </template>
 
 <script>
+import Loader from "@/components/Loader.vue";
+
 export default {
+  components: {
+    Loader,
+  },
   data() {
     return {
       users: [], // Pour stocker les utilisateurs récupérés
       deleteUserId: null, // ID de l'utilisateur à supprimer
       deleteIndex: null, // Index de l'utilisateur à supprimer dans la liste
       searchText: "", // Texte de recherche saisi par l'utilisateur
+      loading: true, // Add loading state
     };
   },
   methods: {
@@ -121,6 +128,8 @@ export default {
       return new Date(isoDate).toLocaleString("en-GB", options);
     },
     async showAllUsers() {
+      this.loading = true;
+
       try {
         const response = await fetch("http://127.0.0.1:8000/api/users");
         if (!response.ok) {
@@ -128,6 +137,7 @@ export default {
         }
         const usersData = await response.json();
         this.users = usersData; // Mettre à jour la liste des utilisateurs dans les données de Vue.js
+        this.loading = false;
       } catch (error) {
         console.error("Error fetching users:", error);
       }

@@ -83,11 +83,21 @@
             <span class="item-name">Files</span>
         </router-link>
     </li> -->
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <router-link
         :class="checkActive('chat.chat') ? 'active nav-link' : 'nav-link'"
         aria-current="page"
         :to="{ name: 'chat.chat' }"
+      >
+        <i class="icon material-symbols-outlined"> message </i>
+        <span class="item-name">Chat</span>
+      </router-link>
+    </li> -->
+    <li class="nav-item">
+      <router-link
+        :class="checkActive('chat.chat') ? 'active nav-link' : 'nav-link'"
+        aria-current="page"
+        :to="{ name: 'chat.chat2' }"
       >
         <i class="icon material-symbols-outlined"> message </i>
         <span class="item-name">Chat</span>
@@ -824,10 +834,19 @@
         :class="checkActive('table.chatroom') ? 'active nav-link' : 'nav-link'"
         :to="{ name: 'table.chatroom' }"
       >
-        <i class="icon material-symbols-outlined"> admin_panel_settings </i>
-        <span class="item-name">Chat Room Managment</span>
+        <img
+          src="@/assets/images/icon/room.png"
+          class="img-fluid mb-4"
+          alt="logo"
+          width="24px"
+          height="25px"
+        />
+        <span class="item-name" style="margin-top: -25px"
+          >Chat Room Managment</span
+        >
       </router-link>
     </li>
+
     <!-- <li class="nav-item">
           <router-link
             :class="

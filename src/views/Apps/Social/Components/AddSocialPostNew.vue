@@ -27,7 +27,6 @@
                 "
                 alt="image de profil"
                 class="avatar-30 img-fluid"
-
               />
             </div>
 
@@ -80,8 +79,6 @@
               </label>
             </li>
 
-
-
             <li class="me-3 mb-md-0 mb-2">
               <a
                 href="#"
@@ -105,11 +102,15 @@
               />
             </div>
           </ul>
+
           <button
             class="btn btn-primary d-block w-100 mt-3"
             type="button"
             data-bs-dismiss="modal"
-            @click="modifierPublication(publicationId)"
+            @click="
+              console.log('Publication ID:', publicationId);
+              modifierPublication(publicationId);
+            "
           >
             Update
           </button>
@@ -134,7 +135,13 @@
                     userData.img_profile ? userData.img_profile : defaultpic
                   "
                   alt="image de profil"
-                  class="avatar-40 img-fluid"
+                  class="avatar-135 img-fluid"
+                  style="
+                    width: 45px;
+                    height: 45px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                  "
                 />
               </div>
               <div class="w-100">
@@ -359,11 +366,11 @@
             </template>
             <template v-if="post.contenu.image_path !== null">
               <img
-                  :src="post.contenu.image_path"
-                  alt="Image du post"
-                  class="img-fluid rounded w-35"
-                  style="width: 70%"
-                />
+                :src="post.contenu.image_path"
+                alt="Image du post"
+                class="img-fluid rounded w-35"
+                style="width: 70%"
+              />
             </template>
           </div>
           <div
@@ -485,7 +492,13 @@
                             : defaultpic
                         "
                         alt="image de profil"
-                        class="avatar-30 img-fluid"
+                        class="avatar-135 img-fluid"
+                        style="
+                          width: 45px;
+                          height: 45px;
+                          border-radius: 50%;
+                          object-fit: cover;
+                        "
                       />
                     </div>
                     <!-- <div class="comment-data-block ms-3">
@@ -587,13 +600,13 @@
                               class="btn btn-primary"
                               @click="confirmEdit"
                             >
-                              Confirmer
+                              Confirm
                             </button>
                             <button
                               class="btn btn-secondary"
                               @click="closeEditModal"
                             >
-                              Annuler
+                              Cancel
                             </button>
                           </div>
                         </div>
@@ -615,7 +628,7 @@
                 v-model="nouveauxCommentaires[post.id]"
               />
               <button type="submit" class="btn btn-primary mr-2">
-                Ajouter Commentaire
+                Add comment
               </button>
             </form>
           </div>
@@ -783,7 +796,7 @@ export default {
         })
         .then((response) => {
           this.posts = response.data;
-          this.loadUserDetails();
+          // this.loadUserDetails();
           for (const publication of this.posts) {
             console.log("fefe", this.publication);
 
@@ -929,7 +942,15 @@ export default {
           );
         });
     },
-
+    validateUpload() {
+      const token = localStorage.getItem("token");
+      this.contenu.image_path = this.fileToUpload;
+      console.log("base64: ", this.fileToUpload);
+      if (!this.fileToUpload) {
+        console.error("Aucun fichier sélectionné.");
+        return;
+      }
+    },
     handleFileInputChange2(event) {
       const file = event.target.files[0];
       const fileType = file.type.split("/")[1];
@@ -941,12 +962,10 @@ export default {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        console.log("test oussema ");
-
         console.log("nourrr ", fileType);
         const base64String =
           `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
-        // this.fileToUpload = base64String;
+        this.fileToUpload = base64String;
         this.contenu.image_path = base64String;
         console.log("oussema ", this.contenu.image_path);
       };
@@ -956,12 +975,16 @@ export default {
     },
 
     modifierPublication(publicationId) {
+      if (!this.publication) {
+        console.error("Publication not defined.");
+        return;
+      }
       const token = localStorage.getItem("token");
 
       const headers = { Authorization: `Bearer ${token}` };
       if (this.contenu.image_path !== this.fileToUpload) {
-    this.contenu.image_path = this.fileToUpload; // Mettez à jour l'image
-  }
+        this.contenu.image_path = this.fileToUpload; // Mettez à jour l'image
+      }
       console.log("tswr:", this.contenu.image_path);
       axios
         .put(
@@ -976,10 +999,10 @@ export default {
         })
 
         .catch((error) => {
-          console.error(
-            "Erreur lors de la modification de la publication:",
-            error.response.data.error,
-          );
+          // console.error(
+          //   "Erreur lors de la modification de la publication:",
+          //   error.response.data.error,
+          // );
         });
 
       // window.location.reload();
@@ -991,6 +1014,7 @@ export default {
     },
     effacerImage() {
       this.contenu.image_path = null; // ou null
+      this.fileToUpload = null;
     },
     formatDateTime(datetime) {
       const options = {

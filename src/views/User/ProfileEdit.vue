@@ -47,6 +47,13 @@
                 <h4 class="card-title">Personal Information</h4>
               </template>
               <template v-slot:body>
+                <div
+                  v-if="errorMessage"
+                  class="alert alert-danger"
+                  role="alert"
+                >
+                  {{ errorMessage }}
+                </div>
                 <div class="profile-img-edit">
                   <img
                     :src="
@@ -63,22 +70,7 @@
                     @change="handleFileInputChange"
                     class="form-control"
                   />
-                  <!-- <button @click="validateUpload" class="btn btn-primary">
-                    Valider l'upload
-                  </button> -->
                 </div>
-                <!-- <div class="p-image">
-          <i
-            class="ri-pencil-line upload-button text-white"
-          ></i>
-          <input
-            class="file-upload"
-            type="file"
-            accept="image/*"
-            @change="handleFileUpload"
-          />
-          <button @click="uploadProfileImage">Télécharger l'image de profil</button>
-        </div> -->
 
                 <form @submit.prevent="saveChanges()">
                   <div class="form-group row align-items-center">
@@ -209,6 +201,8 @@ export default {
   data() {
     return {
       userData: JSON.parse(localStorage.getItem("userData") || "null"),
+      errorMessage: "",
+
       user: {
         id: "",
         nom: "",
@@ -237,18 +231,32 @@ export default {
       .catch((error) => {
         console.error(
           "Erreur lors du chargement des détails de l'utilisateur :",
-          error
+          error,
         );
       });
   },
   methods: {
-    async saveChanges() {
-      try {
-        // let formData = new FormData();
-        // formData.append("nom", this.user.nom);
-        // formData.append("prenom", this.user.prenom);
-        // formData.append("tel", this.user.tel);
+    validateName(name) {
+      const regex = /^[a-zA-Z]+$/;
+      return regex.test(name);
+    },
+    validateLastName(lastName) {
+      const regex = /^[a-zA-Z]+$/;
+      return regex.test(lastName);
+    },
 
+    async saveChanges() {
+      if (!this.validateName(this.user.nom)) {
+        this.errorMessage = "The name must contain letters only.";
+
+        return;
+      }
+
+      if (!this.validateLastName(this.user.prenom)) {
+        this.errorMessage = "Last name must contain letters only.";
+        return;
+      }
+      try {
         console.log("Données envoyées à l'API :", this.user);
 
         const response = await axios.post(
@@ -263,17 +271,22 @@ export default {
               "Content-Type": "multipart/form-data",
               Authorization: "Bearer " + localStorage.getItem("token"),
             },
-          }
+          },
         );
 
         console.log("Réponse de l'API :", response.data);
 
         this.user = { ...response.data }; // Mettre à jour les données avec la réponse du backend
-
-        alert("Profil mis à jour avec succès !");
+        localStorage.setItem("userData", JSON.stringify(this.user));
+        this.$emit('profileUpdated');
+        alert("Profile successfully updated !");
       } catch (error) {
+        if (error.response) {
+          this.errorMessage = "An error occurred while updating the profile.";
+        } else {
+          this.errorMessage = "Network error. Please try again.";
+        }
         console.error("Erreur lors de la mise à jour du profil :", error);
-        alert("Une erreur s'est produite lors de la mise à jour du profil.");
       }
     },
 
@@ -285,7 +298,7 @@ export default {
         formData.append("nouveau_mot_de_passe", this.user.nouveau_mot_de_passe);
         formData.append(
           "verification_mot_de_passe",
-          this.user.verification_mot_de_passe
+          this.user.verification_mot_de_passe,
         );
 
         const response = await axios.post(
@@ -296,25 +309,25 @@ export default {
               "Content-Type": "multipart/form-data",
               Authorization: "Bearer " + localStorage.getItem("token"),
             },
-          }
+          },
         );
 
         console.log("Réponse de l'API :", response.data);
-        alert("Le mot de passe a été changé avec succès.");
+        alert("Password successfully changed.");
         this.user.email = "";
         this.user.mot_de_passe_actuel = "";
         this.user.nouveau_mot_de_passe = "";
         this.user.verification_mot_de_passe = "";
       } catch (error) {
         console.error("Erreur lors du changement de mot de passe :", error);
-        alert("Une erreur s'est produite lors du changement de mot de passe.");
+        alert("An error occurred while changing password.");
       }
     },
     handleFileUpload(event) {
       const file = event.target.files[0];
       this.selectedFile = file;
     },
-    
+
     handleFileInputChange(event) {
       const file = event.target.files[0];
       const fileType = file.type.split("/")[1];
@@ -326,7 +339,6 @@ export default {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        console.log("nourrr ", fileType);
         const base64String =
           `data:application/${fileType};base64,` + reader.result.split(",")[1]; // Prepend data URL
         this.fileToUpload = base64String;
@@ -365,30 +377,6 @@ export default {
           console.error("Erreur lors du téléchargement de l'image :", error);
         });
     },
-
-    // uploadProfileImage(event) {
-    //   const file = event.target.files[0];
-    //   const formData = new FormData();
-    //   formData.append("img_profile", file);
-
-    //   axios
-    //     .put("http://127.0.0.1:8000/api/imgProfile", formData, {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //         Authorization: `Bearer ${this.accessToken}`,
-    //       },
-    //     })
-    //     .then((response) => {
-    //       // Mettez à jour l'URL de l'image de profil dans userData
-    //       this.userData.img_profile = response.data.img_profile;
-    //       // Affichez un message de succès ou effectuez d'autres actions nécessaires
-    //       console.log(response.data.message);
-    //     })
-    //     .catch((error) => {
-    //       // Gérez les erreurs de téléchargement ici
-    //       console.error("Erreur lors du téléchargement de l'image :", error);
-    //     });
-    // },
   },
 };
 </script>

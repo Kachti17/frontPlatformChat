@@ -43,7 +43,7 @@
                     placeholder="Enter name"
                     required
                   />
-                  <div class="invalid-feedback">Veuillez saisir votre nom.</div>
+                  <div class="invalid-feedback">Please enter your name.</div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label" for="validationTooltip02"
@@ -57,7 +57,7 @@
                     required
                   />
                   <div class="invalid-feedback">
-                    Veuillez saisir votre prénom.
+                    Please enter your last name.
                   </div>
                 </div>
               </div>
@@ -118,7 +118,7 @@
                   <option value="user">User</option>
                 </select>
               </div>
-              <div class="form-group" v-if="role === 'user'">
+              <!-- <div class="form-group" v-if="role === 'user'">
                 <label class="form-label" for="exampleDepartement"
                   >Departement *</label
                 >
@@ -134,7 +134,7 @@
                   <option value="It department">It department</option>
                   <option value="Call center">Call center</option>
                 </select>
-              </div>
+              </div> -->
               <div class="d-inline-block w-100">
                 <div class="form-check d-inline-block mt-2 pt-1">
                   <input
@@ -188,8 +188,35 @@ export default {
     };
   },
   methods: {
+    validateName(name) {
+      const regex = /^[a-zA-Z]+$/;
+      return regex.test(name);
+    },
+    validateLastName(lastName) {
+      const regex = /^[a-zA-Z]+$/;
+      return regex.test(lastName);
+    },
+    validateEmail(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    },
     async onSubmit() {
       this.errorMessage = "";
+
+      if (!this.validateName(this.nom)) {
+        this.errorMessage = "The name must contain letters only.";
+        return;
+      }
+
+      if (!this.validateLastName(this.prenom)) {
+        this.errorMessage = "Last name must contain letters only.";
+        return;
+      }
+
+      if (!this.validateEmail(this.email)) {
+        this.errorMessage = "Please enter a valid email address.";
+        return;
+      }
 
       try {
         const response = await axios.post(
@@ -201,30 +228,43 @@ export default {
             password: this.password,
             tel: this.tel.trim() !== "" ? this.tel : null,
             role: this.role,
-            departement: this.role === 'user' ? this.departement : null, // Ajouter la logique pour le département
           },
         );
 
         if (response.status === 201) {
           this.successMessage = response.data.message;
           this.$router.push("/table/datatable");
-        } else {
-          // Autres cas (statut de réponse non géré)
-          throw new Error("Échec de la création de l'utilisateur");
         }
       } catch (error) {
-        // Gestion des erreurs
-        if (
-          error.response &&
-          error.response.status === 400 &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          // Si le statut de la réponse est 400 (Bad Request) et qu'un message d'erreur est renvoyé
-          this.errorMessage = error.response.data.error; // Affichez le message d'erreur à l'utilisateur
+        if (error.response) {
+          const status = error.response.status;
+          if (status === 423) {
+            // Gestion des erreurs de validation
+            const errors = error.response.data.errors;
+            if (errors.email) {
+              this.errorMessage = errors.email[0];
+              alert(errors.email[0]);
+            } else if (errors.tel) {
+              this.errorMessage = errors.tel[0];
+              alert(errors.tel[0]);
+            } else {
+              this.errorMessage = "Validation error. Please check your input.";
+              alert("Validation error. Please check your input.");
+            }
+          } else if (status === 400) {
+            // Gestion des erreurs spécifiques à l'administrateur
+            this.errorMessage = error.response.data.error;
+            alert(error.response.data.error);
+          } else {
+            // Autres erreurs
+            this.errorMessage = "Please choose another one.";
+            alert("Please choose another one.");
+          }
+          console.log("API Response:", error.response);
         } else {
-          // Autres erreurs
-          console.error("Erreur lors de la création de l'utilisateur :", error);
+          this.errorMessage = "Network error. Please try again.";
+          alert("Network error. Please try again.");
+          console.log("Error:", error);
         }
       }
     },
